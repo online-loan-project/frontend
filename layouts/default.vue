@@ -18,7 +18,7 @@ definePageMeta({
 const { isLoggedIn } = useAuthenticate()
 onMounted(async () => {
   if (isLoggedIn.value) {
-    await useAuthStore().getMe()
+    // await useAuthStore().getMe()
   }
 })
 </script>
