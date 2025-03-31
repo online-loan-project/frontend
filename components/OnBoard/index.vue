@@ -3,12 +3,12 @@
     <div class="absolute inset-0 bg-black bg-opacity-50"></div>
 
     <div class="relative z-10 flex flex-col items-center space-y-6 text-white text-center">
-      <img src="@/assets/image/logo.svg" alt="logo" class="w-32 md:w-40" />
-
+      <img src="@/assets/image/logowhite.png" alt="logo" class="w-32 md:w-40" />
+      <h1 class="text-6xl font-bold text-white text-center">Get the loan You need with Jorngka</h1>
       <p class="text-lg md:text-xl font-light leading-relaxed">
-        The beauty of fragrance is that <br>
-        it speaks to your heart and <br>
-        hopefully someone else's.
+        Apply for a loan that you need <br>
+        in an easy way just few click <br>
+        You will get your laon.
       </p>
 
       <div class="flex flex-col space-y-5">
@@ -27,7 +27,7 @@
 
 <style scoped>
 .bg-home {
-  background: url('@/assets/image/homePage.png') no-repeat center center;
+  background: url('@/assets/image/home.png') no-repeat center center;
   background-size: cover;
 }
 </style>
