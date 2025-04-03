@@ -1,41 +1,59 @@
 <script setup>
+import { useAuthStore } from '~/store/auth.js'
+import { ref } from 'vue'
+import { ElMessage } from 'element-plus'
+
 definePageMeta({
   layout: 'auth',
   middleware: ['redirect-if-authenticated']
 })
+
+const authStore = useAuthStore()
+const { login } = authStore
+
+const email = ref('')
+const password = ref('')
+
+const handleLogin = async () => {
+  try {
+    await login({ email: email.value, password: password.value })
+    navigateTo('/home')
+  } catch (error) {
+    console.error('Login failed:', error)
+    ElMessage.error(error.message || 'Login failed')
+  }
+}
 </script>
 
 <template>
-  <div class="relative w-full h-screen bg-home">
+  <div class="relative w-full h-screen bg-home flex items-center justify-center">
     <div class="absolute inset-0 bg-black bg-opacity-50"></div>
 
-    <div class="relative flex flex-col items-center justify-center h-full space-y-6">
-      
-      <!-- Added Heading and Subtext ABOVE the form -->
-      <h1 class="text-6xl font-bold text-white text-center">Welcome Back</h1>
-      <p class="text-lg text-gray-300 text-center">Login into your account</p>
+    <div class="relative w-full max-w-md p-6 bg-white rounded-lg shadow-lg animate-slide-up z-10">
+      <h1 class="text-3xl font-bold text-center mb-4">Welcome Back</h1>
+      <p class="text-center text-gray-500 mb-6">Login to your account</p>
 
-      <div class="bg-white border border-blue-500 rounded-lg p-6 w-96 shadow-lg animate-slide-up">
-        <h1 class="text-xl font-semibold text-center mb-4">Login</h1>
-        <form class="space-y-4">
-          <div>
-            <label for="phone" class="block text-gray-700">Phone Number</label>
-            <input type="email" id="email" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-teal-500" />
-          </div>
-          <div>
-            <label for="password" class="block text-gray-700">Password</label>
-            <input type="password" id="password" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-teal-500" />
-          </div>
-          <button type="submit" class="w-full bg-[#040058] text-white py-2 rounded-lg hover:bg-[#27548A] transition">Login</button>
-          <button type="submit" class="w-full bg-[#040058] text-white py-2 rounded-lg hover:bg-[#27548A] transition">Login with Google</button>
-        </form>
+      <el-form @submit.prevent="handleLogin" label-position="top" class="space-y-4">
+        <el-form-item label="Email" class="w-full">
+          <el-input v-model="email" type="email" placeholder="Enter your email" clearable class="w-full" />
+        </el-form-item>
 
-        <!-- Added Text Below the Form -->
-        <p class="mt-4 text-center text-gray-600">
-          Don't have an account? 
-          <a href="#" class="text-green-500 font-semibold hover:underline">Sign up!</a>
-        </p>
-      </div>
+        <el-form-item label="Password" class="w-full">
+          <el-input v-model="password" type="password" placeholder="Enter your password" show-password class="w-full" />
+        </el-form-item>
+
+        <div class="flex justify-between items-center mt-1">
+          <el-button type="primary" class="w-full h-10 rounded-lg" native-type="submit">Login</el-button>
+        </div>
+        <div class="flex justify-between items-center mt-1">
+          <el-button type="danger" class="w-full h-10 rounded-lg">Login with Google</el-button>
+        </div>
+      </el-form>
+
+      <p class="mt-4 text-center text-gray-600">
+        Don't have an account?
+        <a href="#" class="text-blue-500 font-semibold hover:underline">Sign up!</a>
+      </p>
     </div>
   </div>
 </template>
@@ -66,7 +84,7 @@ definePageMeta({
 }
 
 .animate-slide-up {
-  animation: slide-up 1s ease-in-out;
+  animation: slide-up 0.5s ease-in-out;
 }
 
 .bg-home {
