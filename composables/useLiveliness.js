@@ -125,7 +125,7 @@ export function useFaceDetection() {
     }
   }
 
-  async function faceMeshResults(results, isDraw = true) {
+  async function faceMeshResults(results, isDraw = false) {
     const { drawConnectors } = await import('@mediapipe/drawing_utils')
     const faceMeshModule = await import('@mediapipe/face_mesh')
     const {
