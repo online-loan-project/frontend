@@ -16,7 +16,8 @@ export default defineNuxtConfig({
     "dayjs-nuxt",
     ["@vueuse/nuxt", { ssr: false }],
     ["@nuxtjs/sitemap"],
-    "@element-plus/nuxt"
+    "@element-plus/nuxt",
+    "nuxt-telegram-auth",
   ],
 
   css: [
@@ -30,6 +31,7 @@ export default defineNuxtConfig({
   elementPlus: { /** Options */ },
 
   runtimeConfig: {
+    TELEGRAM_TOKEN: "7806063687:AAHuOOTEwvmO92xXvyJXJGWxXc0YXzbt-Tk",
     public: {
       appBaseUrl: process.env.APP_BASE_URL,
       appSiteUrl: process.env.APP_SITE_URL,
@@ -37,6 +39,12 @@ export default defineNuxtConfig({
       serverApiUrl: process.env.SERVER_API_URL,
       apiVersion: process.env.API_VERSION
     }
+  },
+
+  vite: {
+    server: {
+      allowedHosts: true,
+    },
   },
 
   app: {
