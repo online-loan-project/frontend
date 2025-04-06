@@ -125,7 +125,11 @@ export function useFaceDetection() {
     }
   }
 
-  async function faceMeshResults(results, isDraw = false) {
+  async function faceMeshResults(results, isDraw = true) {
+    //if mobile device set isDraw to false
+    if (window.innerWidth < 768) {
+      isDraw = false
+    }
     const { drawConnectors } = await import('@mediapipe/drawing_utils')
     const faceMeshModule = await import('@mediapipe/face_mesh')
     const {
