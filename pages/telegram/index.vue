@@ -8,7 +8,7 @@
         <p>Session: {{ session }}</p>
       </div>
       <div v-else>
-        <TelegramLoginWidget telegram-login="yong_kmeng_steav_bot" @callback="testCallback" />
+        <TelegramLoginWidget telegram-login="jorngka_bot" @callback="testCallback" />
       </div>
     </div>
   </div>
