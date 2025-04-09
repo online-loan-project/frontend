@@ -1,19 +1,15 @@
 <script setup>
 definePageMeta({
   layout: 'default',
-  middleware: ['authenticated'],
+  middleware: ['authenticated', 'dashboard-redirect-global'],
   // requiresBorrower: true,
   // requiresAdmin: true
 })
 </script>
 
 <template>
-  <div>
-    <h1>Home</h1>
-    <el-button type="primary" @click="navigateTo('/live')">Go to Face</el-button>
-  </div>
+  <div class="text-center p-10">Redirecting...</div>
 </template>
 
 <style scoped>
-
 </style>
