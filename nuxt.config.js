@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  ssr: true,
+  ssr: false,
   devtools: { enabled: false },
 
   postcss: {
@@ -49,7 +49,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: "Rumdul"
+      title: "JorngKa"
     }
   },
 

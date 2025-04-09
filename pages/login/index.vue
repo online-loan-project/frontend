@@ -17,7 +17,7 @@ const password = ref('')
 const handleLogin = async () => {
   try {
     await login({ email: email.value, password: password.value })
-    navigateTo('/home')
+    navigateTo('/borrower/dashboard')
   } catch (error) {
     console.error('Login failed:', error)
     ElMessage.error(error.message || 'Login failed')
