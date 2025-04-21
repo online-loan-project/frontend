@@ -41,12 +41,11 @@ const toggleSubmenu = (label) => {
   >
     <!-- Header -->
     <div class="flex items-center justify-between px-4 py-5">
-      <h1 class="text-2xl font-extrabold text-primary-700 tracking-wide transition-opacity duration-300" v-if="isOpen">MyApp</h1>
+      <h1 class="text-2xl font-extrabold text-primary-700 tracking-wide transition-opacity duration-300" v-if="isOpen">JorngKa</h1>
       <el-button
-        :icon="Menu"
-        size="small"
-        @click="isOpen = !isOpen"
-        class="!bg-transparent !border-0 !text-black dark:!text-black"
+      :icon="Menu"
+      @click="isOpen = !isOpen"
+      class="!bg-transparent !border-0 !text-black dark:!text-black !text-2xl !p-2"
       />
     </div>
 

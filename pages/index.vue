@@ -145,11 +145,11 @@ onMounted(() => {
         <div class="flex flex-col lg:flex-row items-center gap-12">
           <div class="lg:w-1/2 text-center lg:text-left">
             <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-              Financial Freedom <br>
-              <span class="text-primary-200">Within Reach</span>
+              Get The Loan You Need <br>
+              <span class="text-primary-200">When You Need It</span>
             </h1>
             <p class="text-xl md:text-2xl mb-8 opacity-90 max-w-2xl">
-              Get instant loans up to $1000 with competitive rates and flexible repayment options tailored to your needs.
+              Apply for a loan with ease and get approved based on your salary and credit score.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <el-button
@@ -159,21 +159,6 @@ onMounted(() => {
               >
                 Apply Now - 5 Minutes
               </el-button>
-              <el-button
-                size="large"
-                class="!text-lg !px-8 !py-5 !rounded-xl bg-transparent border-2 border-white text-white font-semibold hover:bg-white hover:text-primary-600 transition-all duration-300"
-              >
-                How It Works
-              </el-button>
-            </div>
-
-            <div class="mt-10 flex flex-wrap justify-center lg:justify-start gap-6">
-              <div class="flex items-center">
-                <div class="flex -space-x-2">
-                  <div v-for="i in 4" :key="i" class="w-10 h-10 rounded-full bg-white border-2 border-primary-500"></div>
-                </div>
-                <span class="ml-3 font-medium">10,000+ Happy Customers</span>
-              </div>
             </div>
           </div>
 
@@ -419,13 +404,6 @@ onMounted(() => {
             class="!text-lg !px-8 !py-6 !rounded-xl bg-white text-primary-600 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
           >
             Apply Now - It's Free
-          </el-button>
-          <el-button
-            size="large"
-            class="!text-lg !px-8 !py-6 !rounded-xl bg-transparent border-2 border-white text-white font-semibold hover:bg-white hover:text-primary-600 transition-all duration-300"
-          >
-            <ChatLineRound class="mr-2" />
-            Live Chat
           </el-button>
         </div>
       </div>

@@ -10,8 +10,9 @@ const { value: user } = useCookie('user')
 
 const navLinks = [
   { name: 'home', label: 'Home', path: '/' },
-  { name: 'about', label: 'About', path: '/about' },
-  { name: 'contact', label: 'Contact', path: '/contact' }
+  { name: 'loan', label: 'Loan', path: '/borrower/loan'},
+  { name: 'dashboard', label: 'Dashboard', path: '/borrower/dashboard'},
+  { name: 'about', label: 'About', path: '/borrower/aboutus' },
 ]
 
 const handleScroll = () => {
@@ -48,15 +49,15 @@ onBeforeUnmount(() => {
   >
     <!-- Logo -->
     <div class="flex items-center space-x-3">
-      <img
-        src="https://dummyimage.com/100x100/000/fff"
-        alt="JorngKa Logo"
-        class="h-10 w-10 rounded-full transition-transform hover:scale-105"
-      />
-      <span class="text-2xl font-bold text-primary-600 tracking-wide hover:text-primary-700 transition-colors">
-        JorngKa
-      </span>
-    </div>
+  <img
+    src="@/assets/image/jorngkalogo.png"
+    alt="JorngKa Logo"
+    class="h-10 w-10 rounded-full transition-transform hover:scale-105"
+  />
+  <span class="text-2xl font-bold text-primary-600 tracking-wide hover:text-primary-700 transition-colors">
+    JorngKa
+  </span>
+</div>
 
     <!-- Desktop Navigation -->
     <nav class="hidden md:flex flex-1 justify-center gap-8 mx-8">
