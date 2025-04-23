@@ -40,5 +40,6 @@ const toggleLocale = () => {
   cookies.set('locale', newLocale, { path: '/', expires: '7d' }) // Store locale in a cookie
 }
 
+//{{ $t('home.sign_in') }}
 </script>
 

@@ -1,1 +1,1 @@
-{"virtualbox":{"/home/ubuntu":{"guestpath":"/home/ubuntu","hostpath":"C:/laragon/www/frontend","disabled":false,"__vagrantfile":true},"/vagrant":{"guestpath":"/vagrant","hostpath":"C:/laragon/www/frontend","disabled":false,"__vagrantfile":true}}}
+{"virtualbox":{"/home/ubuntu":{"guestpath":"/home/ubuntu","hostpath":"E:/development/admin/api/admin.rumdol","disabled":false,"__vagrantfile":true},"/vagrant":{"guestpath":"/vagrant","hostpath":"E:/development/admin/api/admin.rumdol","disabled":false,"__vagrantfile":true}}}

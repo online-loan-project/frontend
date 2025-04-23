@@ -11,11 +11,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: {
-          500: '#3B82F6',
-          600: '#2563EB',
-          100: '#DBEAFE',
-        }, // Element Plus primary color
+        primary: '#2EC4B6', // Element Plus primary color
         error: '#F56C6C',
       },
     },

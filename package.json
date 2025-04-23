@@ -51,7 +51,6 @@
     "@vueuse/nuxt": "^10.7.0",
     "chart.js": "^4.4.1",
     "face-api.js": "^0.22.2",
-    "gsap": "^3.12.7",
     "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
     "pinia": "^2.1.7",
