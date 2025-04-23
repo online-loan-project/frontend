@@ -9,18 +9,28 @@ definePageMeta({
 })
 
 const authStore = useAuthStore()
-const { login } = authStore
+const { register } = authStore
 
+const name = ref('')
 const email = ref('')
 const password = ref('')
+const confirmPassword = ref('')
 
-const handleLogin = async () => {
+const handleRegister = async () => {
   try {
-    await login({ email: email.value, password: password.value })
+    if (password.value !== confirmPassword.value) {
+      throw new Error('Passwords do not match')
+    }
+    
+    await register({ 
+      name: name.value,
+      email: email.value, 
+      password: password.value 
+    })
     navigateTo('/borrower/dashboard')
   } catch (error) {
-    console.error('Login failed:', error)
-    ElMessage.error(error.message || 'Login failed')
+    console.error('Registration failed:', error)
+    ElMessage.error(error.message || 'Registration failed')
   }
 }
 </script>
@@ -30,10 +40,14 @@ const handleLogin = async () => {
     <div class="absolute inset-0 bg-black bg-opacity-50"></div>
 
     <div class="relative w-full max-w-md p-6 bg-white rounded-lg shadow-lg animate-slide-up z-10">
-      <h1 class="text-3xl font-bold text-center mb-4">Welcome Back</h1>
-      <p class="text-center text-gray-500 mb-6">Login to your account</p>
+      <h1 class="text-3xl font-bold text-center mb-4">Get Started With Jorngka</h1>
+      <p class="text-center text-gray-500 mb-6">Creating Account</p>
 
-      <el-form @submit.prevent="handleLogin" label-position="top" class="space-y-4">
+      <el-form @submit.prevent="handleRegister" label-position="top" class="space-y-4">
+        <el-form-item label="Full Name" class="w-full">
+          <el-input v-model="name" type="text" placeholder="Enter your full name" clearable class="w-full" />
+        </el-form-item>
+
         <el-form-item label="Email" class="w-full">
           <el-input v-model="email" type="email" placeholder="Enter your email" clearable class="w-full" />
         </el-form-item>
@@ -42,17 +56,21 @@ const handleLogin = async () => {
           <el-input v-model="password" type="password" placeholder="Enter your password" show-password class="w-full" />
         </el-form-item>
 
+        <el-form-item label="Confirm Password" class="w-full">
+          <el-input v-model="confirmPassword" type="password" placeholder="Confirm your password" show-password class="w-full" />
+        </el-form-item>
+
         <div class="flex justify-between items-center mt-1">
-          <el-button type="primary" class="w-full h-10 rounded-lg" native-type="submit">Login</el-button>
+          <el-button type="primary" class="w-full h-10 rounded-lg" native-type="submit">Sign Up</el-button>
         </div>
         <div class="flex justify-between items-center mt-1">
-          <el-button type="danger" class="w-full h-10 rounded-lg">Login with Google</el-button>
+          <el-button type="danger" class="w-full h-10 rounded-lg">Sign Up with Google</el-button>
         </div>
       </el-form>
 
       <p class="mt-4 text-center text-gray-600">
-        Don't have an account?
-        <NuxtLink to="/signup" class="text-blue-500 font-semibold hover:underline">Sign up!</NuxtLink>
+        Already have an account?
+        <NuxtLink to="/login" class="text-blue-500 font-semibold hover:underline">Login</NuxtLink>
       </p>
     </div>
   </div>
