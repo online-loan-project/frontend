@@ -21,20 +21,28 @@ export const useHttp = async (url, options = {}) => {
     },
     // Ensure the body is either FormData or JSON
     body: options.body instanceof FormData ? options.body : JSON.stringify(options.body),
-    async onResponseError({ request, response, options }) {
-      if (response.status === 401) {
-        cookie.value = null // Clear the token on 401
-      } else if (response.status !== 422) {
-        ElMessage.error(response.data?.message || 'Unknown error')
-      }
-    },
   }
 
   try {
     return await $fetch(url, { baseURL, ...options })
   } catch (error) {
     console.error('HTTP Request failed:', error)
-    ElMessage.error(error.message || 'Unknown error occurred')
+
+    // Handle error message display
+    if (error.data) {
+      // If there's a specific message in the error response
+      if (error.data.message) {
+        ElMessage.error(error.data.message)
+      }
+      // If there are validation errors, you might want to show them all
+      else if (error.data.errors) {
+        const errorMessages = Object.values(error.data.errors).flat().join('\n')
+        ElMessage.error(errorMessages)
+      }
+    } else {
+      ElMessage.error(error.message || 'Unknown error occurred')
+    }
+
     throw error
   }
 }
