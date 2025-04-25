@@ -104,7 +104,7 @@ const handleRegister = async () => {
 
     await register(formData)
     console.log('Registration successful:', form.value)
-    navigateTo('/dashboard')
+    navigateTo('/telegram')
   } catch (error) {
     if (error.name !== 'Error') { // Skip showing validation errors as they're already shown
       console.error('Registration failed:', error)

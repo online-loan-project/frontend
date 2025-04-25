@@ -82,6 +82,18 @@ export const useAuthStore = defineStore('auth', () => {
     cookies.remove('tokenType')
   }
 
+  //telegramChat
+  const telegramChat = async (credentials) => {
+    try {
+      const data = await authService.telegramChat(credentials)
+      console.log(data)
+      return data
+    } catch (error) {
+      ElMessage.error(error.message || 'Login failed')
+      throw new Error(`Login failed: ${error.message || 'Unknown error'}`)
+    }
+  }
+
   return {
     user: computed(() => user.value),
     token,
@@ -89,5 +101,6 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     register,
     getMe,
+    telegramChat,
   }
 })

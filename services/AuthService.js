@@ -28,6 +28,11 @@ class AuthService extends BaseService {
   async logout (req) {
     return await this._post(`${this._prefix}/logout`, req)
   }
+
+  //telegram-chat
+  async telegramChat (req) {
+    return await this._post(`${this._prefix}/telegram-chat-id`, req)
+  }
 }
 
 export default AuthService
