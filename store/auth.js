@@ -34,6 +34,30 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const register = async (credentials) => {
+    try {
+
+      const data = await authService.register(credentials)
+      console.log(data)
+      const { data: userData, token: authToken } = data || {}
+      if (!authToken) {
+        throw new Error('Invalid Credentials')
+      }
+
+      user.value = userData
+      token.value = authToken
+      const cookieOptions = { secure: true, sameSite: 'Strict' }
+
+      cookies.set('access_token', authToken, cookieOptions)
+      cookies.set('user', JSON.stringify(userData), cookieOptions)
+      cookies.set('tokenType', 'Bearer', cookieOptions)
+
+      return data
+    } catch (error) {
+      throw new Error(`Login failed: ${error.message || 'Unknown error'}`)
+    }
+  }
+
   //getMe function
   const getMe = async () => {
     try {
@@ -58,11 +82,25 @@ export const useAuthStore = defineStore('auth', () => {
     cookies.remove('tokenType')
   }
 
+  //telegramChat
+  const telegramChat = async (credentials) => {
+    try {
+      const data = await authService.telegramChat(credentials)
+      console.log(data)
+      return data
+    } catch (error) {
+      ElMessage.error(error.message || 'Login failed')
+      throw new Error(`Login failed: ${error.message || 'Unknown error'}`)
+    }
+  }
+
   return {
     user: computed(() => user.value),
     token,
     login,
     logout,
+    register,
     getMe,
+    telegramChat,
   }
 })

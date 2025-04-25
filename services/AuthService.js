@@ -17,12 +17,21 @@ class AuthService extends BaseService {
     return await this._post(`${this._prefix}/login`, req)
   }
 
+  async register (req) {
+    return await this._post(`${this._prefix}/register`, req)
+  }
+
   async getMe () {
     return await this._get(`${this._prefix}/me`)
   }
 
   async logout (req) {
     return await this._post(`${this._prefix}/logout`, req)
+  }
+
+  //telegram-chat
+  async telegramChat (req) {
+    return await this._post(`${this._prefix}/telegram-chat-id`, req)
   }
 }
 

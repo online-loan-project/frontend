@@ -2,6 +2,11 @@
 import { useRouter } from 'vue-router'
 import { Phone } from '@element-plus/icons-vue'
 
+useSeoMeta({
+  title: 'JorngKa | Unverified',
+  description: 'Get approved for fast, secure loans up to $1000 with competitive rates. Apply online in minutes with JorngKa.'
+})
+
 const router = useRouter()
 
 const goBack = () => {

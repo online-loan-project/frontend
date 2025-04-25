@@ -2,10 +2,15 @@
 import { Warning } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 
+useSeoMeta({
+  title: 'JorngKa | Unauthorized',
+  description: 'Get approved for fast, secure loans up to $1000 with competitive rates. Apply online in minutes with JorngKa.'
+})
+
 const router = useRouter()
 
 const goBack = () => {
-  router.back()
+  navigateTo('/')
 };
 </script>
 
