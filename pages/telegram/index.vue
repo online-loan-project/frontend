@@ -52,7 +52,7 @@
               @click="declineTelegramLogin"
               class="w-full"
             >
-              Use another method
+              Use Phone Number Verify
             </el-button>
 
           </div>
@@ -98,7 +98,7 @@ const authStore = useAuthStore()
 const { telegramChat } = authStore
 
 const declineTelegramLogin = () => {
-  ElMessage.info('Other login methods coming soon!');
+  navigateTo('/otp');
 };
 
 const handleTelegramCallback = async (user) => {
@@ -117,7 +117,7 @@ const handleTelegramCallback = async (user) => {
   // };
 
   await telegramChat({ chat_id: user.id })
-  navigateTo('/dashboard');
+  navigateTo('/otp');
 
   ElNotification({
     title: 'Login Successful',

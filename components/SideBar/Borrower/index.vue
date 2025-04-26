@@ -7,7 +7,8 @@ import {
   Setting,
   Folder,
   ArrowRight,
-  ArrowDown
+  ArrowDown,
+  Money
 } from '@element-plus/icons-vue'
 
 
@@ -16,6 +17,7 @@ const activeSubmenu = ref(null)
 
 const menuItems = [
   { icon: House, label: 'Dashboard', to: '/borrower/dashboard' },
+  { icon: Money, label: 'Request Loan', to: '/borrower/request-loan' },
   {
     icon: Folder,
     label: 'Projects',

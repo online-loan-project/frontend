@@ -94,6 +94,41 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  //sendCode get
+  const sendCode = async () => {
+    try {
+      const { data } = await authService.sendCode()
+      if (!data) {
+        throw new Error('No data returned')
+      }
+
+
+      user.value = data
+      return data
+    } catch (error) {
+      ElMessage.error(error.message || 'Failed')
+      throw new Error(`Failed: ${error.message || 'Unknown error'}`)
+    }
+  }
+
+  //verifyCode
+  const verifyCode = async (credentials) => {
+    try {
+      const { data } = await authService.verifyCode(credentials)
+      if (!data) {
+        throw new Error('No data returned')
+      }
+
+      user.value = data;
+      const cookieOptions = { secure: true, sameSite: 'Strict' }
+      cookies.set('user', JSON.stringify(data), cookieOptions)
+
+      return data
+    } catch (error) {
+      ElMessage.error(error.message || 'Failed')
+      throw new Error(`Failed: ${error.message || 'Unknown error'}`)
+    }
+  }
   return {
     user: computed(() => user.value),
     token,
@@ -102,5 +137,7 @@ export const useAuthStore = defineStore('auth', () => {
     register,
     getMe,
     telegramChat,
+    sendCode,
+    verifyCode,
   }
 })
