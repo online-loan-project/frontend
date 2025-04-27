@@ -242,7 +242,6 @@ const submitLoanRequest = () => {
 
       <div class="flex justify-between mt-6">
         <el-button @click="prevStep">
-          <i class="i-material-symbols-arrow-back mr-2"></i>
           Back
         </el-button>
         <el-button type="primary" @click="nextStep">
@@ -258,7 +257,7 @@ const submitLoanRequest = () => {
 
       <el-form :model="incomeData" label-width="150px" label-position="top">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <el-form-item label="Monthly Income (BDT)" required>
+          <el-form-item label="Monthly Income (USD)" required>
             <el-input-number
               v-model="incomeData.monthlyIncome"
               :min="10000"
@@ -315,7 +314,6 @@ const submitLoanRequest = () => {
 
       <div class="flex justify-between mt-6">
         <el-button @click="prevStep">
-          <i class="i-material-symbols-arrow-back mr-2"></i>
           Back
         </el-button>
         <el-button type="primary" @click="submitLoanRequest">

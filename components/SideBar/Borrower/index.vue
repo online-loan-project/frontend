@@ -20,10 +20,10 @@ const menuItems = [
   { icon: Money, label: 'Request Loan', to: '/borrower/request-loan' },
   {
     icon: Folder,
-    label: 'Projects',
+    label: 'Loans',
     children: [
-      { label: 'Project A', to: '/projects/a' },
-      { label: 'Project B', to: '/projects/b' }
+      { label: 'Active Loans', to: '/projects/a' },
+      { label: 'Loans History', to: '/projects/b' }
     ]
   },
   { icon: User, label: 'Profile', to: '/borrower/profile' },

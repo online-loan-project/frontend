@@ -58,7 +58,7 @@ const verifyOtp = async () => {
       message: 'Phone number verification successful!',
       type: 'success'
     })
-    navigateTo('/dashboard')
+    navigateTo('/liveliness')
   } catch (error) {
     console.error('Verification failed:', error)
     ElMessage.error('Invalid OTP. Please try again.')

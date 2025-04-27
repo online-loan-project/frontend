@@ -125,6 +125,7 @@ onMounted(() => {
         type="primary"
         size="large"
         class="!rounded-full !px-6 !py-5 shadow-xl pulse-cta"
+        @click="navigateTo('/register')"
       >
         Apply Now
       </el-button>
@@ -221,6 +222,7 @@ onMounted(() => {
                   type="primary"
                   size="large"
                   class="w-full !py-5 !rounded-lg !text-lg font-semibold shadow-md"
+                  @click="navigateTo('/register')"
                 >
                   Get Your Money Now
                 </el-button>
