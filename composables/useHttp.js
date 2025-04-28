@@ -21,6 +21,9 @@ export const useHttp = async (url, options = {}) => {
     },
     // Ensure the body is either FormData or JSON
     body: options.body instanceof FormData ? options.body : JSON.stringify(options.body),
+
+    credentials: 'include', // <-- This will send cookies/auth cross-origin
+    mode: 'cors',           // <-- Explicitly set CORS mode
   }
 
   try {
