@@ -16,8 +16,21 @@ export const useRequestLoanStore = defineStore('request-loan', () => {
     }
   }
 
+  //storeNid
+  const storeNid = async (params) => {
+    try {
+      const { data } = await requestLoanService.storeNid(params)
+      requestLoan.value = data || {}
+      return data
+    } catch (error) {
+      ElMessage.error(error.message || 'Get Request Loan failed')
+      throw new Error(`Get Request Loan failed: ${error.message || 'Unknown error'}`)
+    }
+  }
+
   return {
     RequestLoan: computed(() => requestLoan.value),
     getRequestLoan,
+    storeNid,
   }
 })

@@ -23,8 +23,6 @@ const fetchData = async (page = 1) => {
   try {
     const response = await getRequestLoan({ page: page })
     apiResponse.value = response
-    // Update pagination
-    currentPage.value = page
   } finally {
     loading.value = false
   }

@@ -1,43 +1,30 @@
 <script setup>
 definePageMeta({
   layout: 'default',
-  middleware: ['authenticated'],
+  middleware: ['authenticated', 'dashboard-redirect-global'],
 })
 
-onMounted(() => {
-  // Force redirect immediately when component mounts
-  redirectBasedOnRole()
-})
+const user = useCookie('user').value
 
-// Also run the redirect when the page is first loaded (client-side navigation)
-if (process.client) {
-  redirectBasedOnRole()
-}
-
+// Single redirection point
 function redirectBasedOnRole() {
-  const user = useCookie('user').value
-
-  // If no user, redirect to login
   if (!user) {
+    ElMessage.error('You are not logged in')
     return navigateTo('/login')
   }
-
-  // Redirect based on role
-  switch (user.role) {
-    case 1:
-      return navigateTo('/admin/dashboard')
-    case 2:
-      return navigateTo('/borrower/dashboard')
-    default:
-      // Handle unknown roles - maybe redirect to login or error page
-      return navigateTo('/login')
+  if (user.role == 2) {
+    navigateTo('/borrower/dashboard')
+  } else if (user.role == 1) {
+    navigateTo('/admin/dashboard')
   }
 }
+
+// Run only on client side
+onMounted(() => {
+  redirectBasedOnRole()
+})
 </script>
 
 <template>
   <div class="text-center p-10">Redirecting...</div>
 </template>
-
-<style scoped>
-</style>
