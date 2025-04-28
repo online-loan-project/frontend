@@ -43,19 +43,15 @@ const successButton = async () => {
 
     const formData = new FormData()
 
-    // Convert each image to binary and append to FormData
-    for (const image of capturedImages.value) {
-      // If image is a Blob or File, we can use it directly
+    const image = capturedImages.value[0] // only the first one
+
+    if (image) {
       if (image instanceof Blob || image instanceof File) {
         formData.append('images[]', image)
-      }
-      // If image is a base64 string, convert it to Blob first
-      else if (typeof image === 'string' && image.startsWith('data:image')) {
+      } else if (typeof image === 'string' && image.startsWith('data:image')) {
         const blob = await fetch(image).then(res => res.blob())
         formData.append('images[]', blob)
-      }
-      // If image is already binary data (ArrayBuffer, etc.)
-      else {
+      } else {
         const blob = new Blob([image])
         formData.append('images[]', blob)
       }
