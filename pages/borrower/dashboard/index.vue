@@ -35,7 +35,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <h1 class="mb-4">Welcome Back</h1>
+  <div class="mb-4">
+    <h1 class="text-2xl font-bold">Borrower Dashboard</h1>
+    <p>Welcome to the borrower dashboard!</p>
+  </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
     <el-card shadow="hover" class="summary-card">

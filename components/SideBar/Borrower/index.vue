@@ -27,7 +27,6 @@ const menuItems = [
       { label: 'Loans History', to: '/borrower/loans/history' }
     ]
   },
-  { icon: User, label: 'Profile', to: '/borrower/profile' },
   { icon: Setting, label: 'Settings', to: '/borrower/settings' },
   { icon: SwitchButton, label: 'Logout', to: '/borrower/logout' }
 ]
