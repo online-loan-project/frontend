@@ -4,14 +4,18 @@ import { ElButton, ElAvatar, ElInput, ElMessage } from 'element-plus'
 
 definePageMeta({
   layout: 'borrower',
+  middleware: ['authenticated'],
 })
 
+const { value: userData } = useCookie('user')
 const user = ref({
-  name: 'John Doe',
-  email: 'johndoe@example.com',
-  avatarUrl: 'https://via.placeholder.com/150',
-  phone: '+1 (555) 123-4567',
-  bio: 'Financial enthusiast and loan borrower',
+  name: userData.profile.first_name + ' ' + userData.profile.last_name,
+  firstName: userData.profile.first_name,
+  lastName: userData.profile.last_name,
+  email: userData.email,
+  avatarUrl: userData.profile.image,
+  phone: userData.phone,
+  role: 'Borrower',
 })
 
 const isEditing = ref(false)
@@ -91,7 +95,7 @@ const saveChanges = () => {
         <div>
           <h1 class="text-3xl font-bold text-gray-800">{{ user.name }}</h1>
           <p class="text-gray-600">{{ user.email }}</p>
-          <p class="text-gray-500 text-sm mt-1">{{ user.bio }}</p>
+          <p class="text-gray-500 text-sm mt-1">{{ user.role }}</p>
         </div>
       </div>
 
@@ -112,12 +116,22 @@ const saveChanges = () => {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Name Field -->
         <div>
-          <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
           <ElInput
-            v-model="tempUser.name"
+            v-model="tempUser.firstName"
             id="name"
             :disabled="!isEditing"
-            placeholder="Enter your full name"
+            placeholder="Enter your first name"
+            class="w-full"
+          />
+        </div>
+        <div>
+          <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+          <ElInput
+            v-model="tempUser.lastName"
+            id="name"
+            :disabled="!isEditing"
+            placeholder="Enter your last name"
             class="w-full"
           />
         </div>
@@ -130,7 +144,7 @@ const saveChanges = () => {
             id="email"
             :disabled="!isEditing"
             placeholder="Enter your email"
-            type="email"
+            type="text"
             class="w-full"
           />
         </div>
@@ -143,20 +157,6 @@ const saveChanges = () => {
             id="phone"
             :disabled="!isEditing"
             placeholder="Enter your phone number"
-            class="w-full"
-          />
-        </div>
-
-        <!-- Bio Field -->
-        <div class="md:col-span-2">
-          <label for="bio" class="block text-sm font-medium text-gray-700 mb-1">Bio</label>
-          <ElInput
-            v-model="tempUser.bio"
-            id="bio"
-            :disabled="!isEditing"
-            type="textarea"
-            :rows="3"
-            placeholder="Tell us about yourself"
             class="w-full"
           />
         </div>

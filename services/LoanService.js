@@ -1,14 +1,14 @@
 import BaseService from './BaseService'
 
 let instance = null
-class UserService extends BaseService {
+class LoanService extends BaseService {
   constructor() {
     super('borrower')
   }
 
   static getInstance() {
     if (!instance) {
-      instance = new UserService()
+      instance = new LoanService()
     }
     return instance
   }
@@ -20,19 +20,8 @@ class UserService extends BaseService {
     )
     const queryParams = new URLSearchParams(filteredParams).toString()
 
-    return await this._get(`${this._prefix}/request-loan?${queryParams}`, {})
+    return await this._get(`${this._prefix}/loan?${queryParams}`, {})
   }
-
-  //store nid
-  async storeNid(req) {
-    return await this._post(`${this._prefix}/nid-verify`, req)
-  }
-
-  //store
-  async store(req) {
-    return await this._post(`${this._prefix}/request-loan`, req)
-  }
-
 }
 
-export default UserService
+export default LoanService

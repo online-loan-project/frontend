@@ -8,7 +8,8 @@ import {
   Folder,
   ArrowRight,
   ArrowDown,
-  Money
+  Money,
+  SwitchButton
 } from '@element-plus/icons-vue'
 
 
@@ -22,12 +23,13 @@ const menuItems = [
     icon: Folder,
     label: 'Loans',
     children: [
-      { label: 'Active Loans', to: '/projects/a' },
-      { label: 'Loans History', to: '/projects/b' }
+      { label: 'Active Loans', to: '/borrower/loans/active' },
+      { label: 'Loans History', to: '/borrower/loans/history' }
     ]
   },
   { icon: User, label: 'Profile', to: '/borrower/profile' },
-  { icon: Setting, label: 'Settings', to: '/borrower/settings' }
+  { icon: Setting, label: 'Settings', to: '/borrower/settings' },
+  { icon: SwitchButton, label: 'Logout', to: '/borrower/logout' }
 ]
 
 const toggleSubmenu = (label) => {
@@ -43,7 +45,7 @@ const toggleSubmenu = (label) => {
   >
     <!-- Header -->
     <div class="flex items-center justify-between px-4 py-5">
-      <h1 class="text-2xl font-extrabold text-primary-700 tracking-wide transition-opacity duration-300" v-if="isOpen">MyApp</h1>
+      <h1 class="text-2xl font-extrabold text-primary-700 tracking-wide transition-opacity duration-300" v-if="isOpen">JORNG-KA</h1>
       <el-button
         :icon="Menu"
         size="small"
