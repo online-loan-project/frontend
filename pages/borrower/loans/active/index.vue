@@ -5,7 +5,7 @@ definePageMeta({
 })
 
 import { ref } from 'vue';
-import { useRequestLoanStore } from '~/store/request_loan.js'
+import { useLoanStore } from '~/store/loan.js'
 
 // Import Element Plus icons
 import {
@@ -28,13 +28,13 @@ const selectedLoan = ref(null);
 const currentPage = ref(1);
 const pageSize = ref(10);
 
-const requestLoanStore = useRequestLoanStore()
-const { getRequestLoan } = requestLoanStore
+const loanStore = useLoanStore()
+const { getLoan } = loanStore
 
 const fetchData = async (page = 1) => {
   loading.value = true;
   try {
-    const response = await getRequestLoan({page: page});
+    const response = await getLoan({page: page});
     apiResponse.value = response;
     // Update pagination
     currentPage.value = page;
@@ -43,28 +43,58 @@ const fetchData = async (page = 1) => {
   }
 };
 
-const viewDetails = (loan) => {
-  selectedLoan.value = loan;
-  showDetailsDialog.value = true;
-};
-
 const formatDate = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
 };
 
-const statusBadgeClass = (status) => {
-  console.log(status);
-  switch (status) {
-    case 'approved':
-      return 'approved';
-    case 'eligible':
-      return 'eligible';
-    case 'rejected':
-      return 'rejected';
-    default: // pending
-      return 'pending';
-  }
+const getStatusText = (statusCode) => {
+  const statusMap = {
+    '0': 'UNPAID',
+    '1': 'PAID',
+  };
+  return statusMap[statusCode] || statusCode;
+};
+
+const getStatusType = (statusCode) => {
+  const typeMap = {
+    '0': 'warning', // Pending
+    '1': 'success', // Approved
+  };
+  return typeMap[statusCode] || '';
+};
+
+const getRepaymentStatusText = (statusCode) => {
+  const statusMap = {
+    '0': 'Pending',
+    '1': 'Paid',
+    '2': 'Late',
+  };
+  return statusMap[statusCode] || statusCode;
+};
+
+const getRepaymentStatusType = (statusCode) => {
+  const typeMap = {
+    '0': 'info',    // Pending
+    '1': 'success', // Paid
+    '2': 'warning', // Late
+    '3': 'danger'   // Overdue
+  };
+  return typeMap[statusCode] || '';
+};
+
+const formatSimpleDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString();
+};
+
+const viewDetails = (loan) => {
+  selectedLoan.value = {
+    ...loan,
+    repayment: apiResponse.value.repayment.filter(repayment => repayment.loan_id === loan.id)
+  };
+  showDetailsDialog.value = true;
 };
 
 const navigateToCreate = () => {
@@ -80,11 +110,7 @@ onMounted(() => {
 <template>
   <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-8">
-      <h1 class="text-2xl font-bold text-gray-800">Loan Requests</h1>
-      <el-button type="primary" @click="navigateToCreate">
-        <el-icon class="mr-2"><Plus /></el-icon>
-        Request Loan
-      </el-button>
+      <h1 class="text-2xl font-bold text-gray-800">Active Loans</h1>
     </div>
 
     <!-- Summary Cards -->
@@ -95,8 +121,8 @@ onMounted(() => {
             <el-icon class="text-blue-500 text-xl"><Document /></el-icon>
           </div>
           <div>
-            <p class="text-sm text-gray-500">Total Requests</p>
-            <p class="text-2xl font-bold">{{ apiResponse?.summary?.total_requests }}</p>
+            <p class="text-sm text-gray-500">Total Loans</p>
+            <p class="text-2xl font-bold">{{ apiResponse?.summary?.total_loan }}</p>
           </div>
         </div>
       </el-card>
@@ -107,8 +133,8 @@ onMounted(() => {
             <el-icon class="text-purple-500 text-xl"><Money /></el-icon>
           </div>
           <div>
-            <p class="text-sm text-gray-500">Total Amount</p>
-            <p class="text-2xl font-bold">${{ apiResponse?.summary?.total_request_amount }}</p>
+            <p class="text-sm text-gray-500">Total Repayments Amount</p>
+            <p class="text-2xl font-bold">${{ apiResponse?.summary?.total_repayment_amount?.toFixed(2) }}</p>
           </div>
         </div>
       </el-card>
@@ -119,20 +145,20 @@ onMounted(() => {
             <el-icon class="text-yellow-500 text-xl"><Clock /></el-icon>
           </div>
           <div>
-            <p class="text-sm text-gray-500">Pending</p>
-            <p class="text-2xl font-bold">{{ apiResponse?.summary?.status_counts?.pending }}</p>
+            <p class="text-sm text-gray-500">Total Repayments Count</p>
+            <p class="text-2xl font-bold">{{ apiResponse?.summary?.total_repayment_count }}</p>
           </div>
         </div>
       </el-card>
 
       <el-card shadow="hover" class="summary-card">
         <div class="flex items-center">
-          <div class="flex p-3 rounded-full bg-green-50 mr-4">
-            <el-icon class="text-green-500 text-xl"><CircleCheck /></el-icon>
+          <div class="flex p-3 rounded-full bg-red-50 mr-4">
+            <el-icon class="text-red-500 text-xl"><CircleCheck /></el-icon>
           </div>
           <div>
-            <p class="text-sm text-gray-500">Approved</p>
-            <p class="text-2xl font-bold">{{ apiResponse?.summary?.status_counts?.approved }}</p>
+            <p class="text-sm text-gray-500">Late Repayments</p>
+            <p class="text-2xl font-bold">{{ apiResponse?.summary?.total_late_repayment_count }}</p>
           </div>
         </div>
       </el-card>
@@ -149,12 +175,12 @@ onMounted(() => {
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column label="Amount">
           <template #default="{ row }">
-            ${{ parseFloat(row.loan_amount).toFixed(2) }}
+            ${{ parseFloat(row.loan_repayment).toFixed(2) }}
           </template>
         </el-table-column>
-        <el-table-column prop="loan_type" label="Type">
+        <el-table-column label="Interest">
           <template #default="{ row }">
-            {{ row.loan_type.charAt(0).toUpperCase() + row.loan_type.slice(1) }}
+            ${{ parseFloat(row.revenue).toFixed(2) }}
           </template>
         </el-table-column>
         <el-table-column prop="loan_duration" label="Duration">
@@ -164,8 +190,8 @@ onMounted(() => {
         </el-table-column>
         <el-table-column label="Status">
           <template #default="{ row }">
-            <el-tag :class="statusBadgeClass(row.status)" size="small" effect="light">
-              {{ row.status.charAt(0).toUpperCase() + row.status.slice(1) }}
+            <el-tag :type="getStatusType(row.status)" size="small" effect="light">
+              {{ getStatusText(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
@@ -199,50 +225,67 @@ onMounted(() => {
     </el-card>
 
     <!-- Loan Details Dialog -->
-    <el-dialog v-model="showDetailsDialog" :title="`Loan Request #${selectedLoan?.id}`" width="600px">
-      <div v-if="selectedLoan" class="space-y-4">
+    <el-dialog v-model="showDetailsDialog" :title="`Loan #${selectedLoan?.id}`" width="800px">
+      <div v-if="selectedLoan" class="space-y-6">
+        <!-- Loan Information Section -->
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <h3 class="text-sm font-medium text-gray-500">Loan Amount</h3>
-            <p class="mt-1 text-lg font-semibold">${{ parseFloat(selectedLoan.loan_amount).toFixed(2) }}</p>
+            <h3 class="text-sm font-medium text-gray-500">Loan Repayment</h3>
+            <p class="mt-1 text-lg font-semibold">${{ parseFloat(selectedLoan.loan_repayment).toFixed(2) }}</p>
           </div>
           <div>
-            <h3 class="text-sm font-medium text-gray-500">Approved Amount</h3>
-            <p class="mt-1 text-lg font-semibold">${{ parseFloat(selectedLoan.approved_amount).toFixed(2) }}</p>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <h3 class="text-sm font-medium text-gray-500">Loan Type</h3>
-            <p class="mt-1">{{ selectedLoan.loan_type.charAt(0).toUpperCase() + selectedLoan.loan_type.slice(1) }}</p>
+            <h3 class="text-sm font-medium text-gray-500">Interest</h3>
+            <p class="mt-1 text-lg font-semibold">${{ parseFloat(selectedLoan.revenue).toFixed(2) }}</p>
           </div>
           <div>
             <h3 class="text-sm font-medium text-gray-500">Duration</h3>
             <p class="mt-1">{{ selectedLoan.loan_duration }} months</p>
           </div>
-        </div>
-
-        <div>
-          <h3 class="text-sm font-medium text-gray-500">Status</h3>
-          <el-tag :class="statusBadgeClass(selectedLoan.status)" size="medium" effect="light" class="mt-1">
-            {{ selectedLoan.status.charAt(0).toUpperCase() + selectedLoan.status.slice(1) }}
-          </el-tag>
-        </div>
-
-        <div v-if="selectedLoan.rejection_reason">
-          <h3 class="text-sm font-medium text-gray-500">Rejection Reason</h3>
-          <p class="mt-1">{{ selectedLoan.rejection_reason }}</p>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
           <div>
-            <h3 class="text-sm font-medium text-gray-500">Request Date</h3>
-            <p class="mt-1">{{ formatDate(selectedLoan.created_at) }}</p>
+            <h3 class="text-sm font-medium text-gray-500">Status</h3>
+            <el-tag :type="getStatusType(selectedLoan.status)" size="medium" effect="light" class="mt-1">
+              {{ getStatusText(selectedLoan.status) }}
+            </el-tag>
           </div>
-          <div>
-            <h3 class="text-sm font-medium text-gray-500">Last Updated</h3>
-            <p class="mt-1">{{ formatDate(selectedLoan.updated_at) }}</p>
+        </div>
+
+        <!-- Repayment Schedule Section -->
+        <div>
+          <h3 class="text-lg font-medium text-gray-800 mb-4">Repayment Schedule</h3>
+          <el-table :data="selectedLoan.repayment" border class="w-full">
+            <el-table-column prop="id" label="ID" width="80" />
+            <el-table-column label="Due Date" width="150">
+              <template #default="{ row }">
+                {{ formatSimpleDate(row.repayment_date) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="Amount">
+              <template #default="{ row }">
+                ${{ parseFloat(row.emi_amount).toFixed(2) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="Status" width="120">
+              <template #default="{ row }">
+                <el-tag :type="getRepaymentStatusType(row.status)" size="small" effect="light">
+                  {{ getRepaymentStatusText(row.status) }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="Paid Date" width="150">
+              <template #default="{ row }">
+                {{ row.paid_date ? formatSimpleDate(row.paid_date) : 'Not paid' }}
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+
+        <!-- User Information Section -->
+        <div v-if="selectedLoan.user">
+          <h3 class="text-sm font-medium text-gray-500 mb-2">User Information</h3>
+          <div class="bg-gray-50 p-4 rounded-md">
+            <p><span class="font-medium">Email:</span> {{ selectedLoan.user.email }}</p>
+            <p><span class="font-medium">Phone:</span> {{ selectedLoan.user.phone }}</p>
+            <p><span class="font-medium">Verified:</span> {{ selectedLoan.user.phone_verified_at ? 'Yes' : 'No' }}</p>
           </div>
         </div>
       </div>

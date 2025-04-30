@@ -73,9 +73,10 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const logout = () => {
+  const logout = async () => {
     user.value = null
     token.value = null
+    await authService.logout()
 
     cookies.remove('access_token')
     cookies.remove('user')
@@ -129,6 +130,21 @@ export const useAuthStore = defineStore('auth', () => {
       throw new Error(`Failed: ${error.message || 'Unknown error'}`)
     }
   }
+
+  const changePassword = async (credentials) => {
+    try {
+      const { data } = await authService.changePassword(credentials)
+      if (!data) {
+        throw new Error('No data returned')
+      }
+      user.value = data;
+      return data
+    } catch (error) {
+      ElMessage.error(error.message || 'Failed')
+      throw new Error(`Failed: ${error.message || 'Unknown error'}`)
+    }
+  }
+
   return {
     user: computed(() => user.value),
     token,
@@ -139,5 +155,6 @@ export const useAuthStore = defineStore('auth', () => {
     telegramChat,
     sendCode,
     verifyCode,
+    changePassword,
   }
 })

@@ -1,17 +1,23 @@
 <script setup>
 import { ElMessage } from 'element-plus'
 
+import { useRequestLoanStore } from '~/store/request_loan.js'
+
 definePageMeta({
   layout: 'borrower',
   middleware: ['authenticated'],
 })
 
-const currentStep = ref(1);
+const requestLoanStore = useRequestLoanStore()
+const { storeNid, storeRequestLoan } = requestLoanStore
+
+const currentStep = ref(1)
 const steps = [
   { title: 'Personal Data', icon: 'User' },
   { title: 'NID Verification', icon: 'Postcard' },
-  { title: 'Income Information', icon: 'Money' }
-];
+  { title: 'Income Information', icon: 'Money' },
+  { title: 'Loan Details', icon: 'Document' },
+]
 
 const user = useCookie('user').value
 if (!user || !user.phone) {
@@ -19,80 +25,132 @@ if (!user || !user.phone) {
   navigateTo('/login')
 }
 
+const isSubmitNid = ref(true)
 
 const personalData = ref({
   fullName: user.profile.first_name + ' ' + user.profile.last_name,
   email: user.email,
   phone: user.phone,
   address: user.profile.address,
-  dateOfBirth: user.profile.dob
-});
+  dateOfBirth: user.profile.dob,
+})
 
 const nidData = ref({
   nidNumber: '',
-  nidFront: null,
-  nidBack: null,
-  selfieWithNid: null
-});
+  nidImage: null,
+})
 
 const incomeData = ref({
+  employeeType: 'employer',
+  position: '',
   monthlyIncome: '',
   occupation: '',
   employer: '',
-  bankStatements: []
-});
+  bankStatement: null,
+})
+
+const loanData = ref({
+  loanAmount: '',
+  loanDuration: 6, // months
+  loanType: 'personal',
+})
 
 const nidPreview = ref({
-  front: null,
-  back: null,
-  selfie: null
-});
+  image: null,
+})
 
-const handleFileUpload = (file, type) => {
-  const reader = new FileReader();
+const handleFileUpload = (file) => {
+  if (!file.type.match('image.*')) {
+    ElMessage.error('Please upload an image file')
+    return
+  }
+
+  const maxSize = 5 * 1024 * 1024 // 5MB
+  if (file.size > maxSize) {
+    ElMessage.error('File size should not exceed 5MB')
+    return
+  }
+
+  const reader = new FileReader()
+
   reader.onload = (e) => {
-    if (type === 'front') {
-      nidData.value.nidFront = file;
-      nidPreview.value.front = e.target.result;
-    } else if (type === 'back') {
-      nidData.value.nidBack = file;
-      nidPreview.value.back = e.target.result;
-    } else {
-      nidData.value.selfieWithNid = file;
-      nidPreview.value.selfie = e.target.result;
-    }
-  };
-  reader.readAsDataURL(file);
-};
+    nidData.value.nidImage = file
+    nidPreview.value.image = e.target.result
+  }
 
-const handleBankStatementUpload = (files) => {
-  incomeData.value.bankStatements = [...files];
-};
+  reader.onerror = () => {
+    ElMessage.error('Error reading file. Please try again.')
+  }
+
+  reader.readAsDataURL(file)
+}
+
+const handleBankStatementUpload = (file) => {
+  incomeData.value.bankStatement = file.raw
+}
 
 const nextStep = () => {
   if (currentStep.value < steps.length) {
-    currentStep.value++;
+    currentStep.value++
   }
-};
+}
 
 const prevStep = () => {
   if (currentStep.value > 1) {
-    currentStep.value--;
+    currentStep.value--
   }
-};
+}
 
-const submitLoanRequest = () => {
-  // In a real app, you would submit all data to your backend
-  console.log('Submitting loan request:', {
-    personalData: personalData.value,
-    nidData: nidData.value,
-    incomeData: incomeData.value
-  });
+const submitNid = async () => {
+  const formData = new FormData()
+  formData.append('nid_image', nidData.value.nidImage)
 
-  // Show success message and redirect
-  ElMessage.success('Loan request submitted successfully!');
-  navigateTo('/borrower/request-loan');
-};
+  const respond = await storeNid(formData)
+  nidData.value.nidNumber = respond.nid_number
+
+  console.log('Submitting NID data:', respond)
+
+  isSubmitNid.value = false
+  ElMessage.success('NID verification submitted successfully!')
+}
+
+const submitLoanRequest = async () => {
+  // Prepare form data for submission
+  const formData = new FormData()
+
+  // Append income data
+  formData.append('employee_type', incomeData.value.employeeType)
+  formData.append('position', incomeData.value.position)
+  formData.append('income', incomeData.value.monthlyIncome)
+
+  if (incomeData.value.bankStatement) {
+    formData.append('bank_statement', incomeData.value.bankStatement)
+  }
+
+  // Append NID data
+  formData.append('nid_number', nidData.value.nidNumber)
+  if (nidData.value.nidImage) {
+    formData.append('nid_image', nidData.value.nidImage)
+  }
+
+  // Append loan data
+  formData.append('loan_amount', loanData.value.loanAmount)
+  formData.append('loan_duration', loanData.value.loanDuration)
+  formData.append('loan_type', loanData.value.loanType)
+
+  formData.append('occupation', incomeData.value.occupation)
+  formData.append('employer', incomeData.value.employer)
+
+  try {
+    const response = await storeRequestLoan(formData)
+    ElMessage.success('Loan request submitted successfully!')
+    navigateTo('/borrower/request-loan')
+  } catch (error) {
+    console.log(error)
+    ElMessage.error('Failed to submit loan request. Please try again.')
+    console.error('Error submitting loan request:', error)
+  }
+}
 </script>
 
 <template>
@@ -115,16 +173,29 @@ const submitLoanRequest = () => {
 
       <el-form :model="personalData" label-width="150px" label-position="top">
         <el-form-item label="Full Name" required>
-          <el-input v-model="personalData.fullName" placeholder="Enter your full name" disabled />
+          <el-input
+            v-model="personalData.fullName"
+            placeholder="Enter your full name"
+            disabled
+          />
         </el-form-item>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <el-form-item label="Email Address" required>
-            <el-input v-model="personalData.email" type="text" placeholder="your@email.com" disabled />
+            <el-input
+              v-model="personalData.email"
+              type="text"
+              placeholder="your@email.com"
+              disabled
+            />
           </el-form-item>
 
           <el-form-item label="Phone Number" required>
-            <el-input v-model="personalData.phone" placeholder="092000000" disabled />
+            <el-input
+              v-model="personalData.phone"
+              placeholder="092000000"
+              disabled
+            />
           </el-form-item>
         </div>
 
@@ -149,7 +220,9 @@ const submitLoanRequest = () => {
         </el-form-item>
       </el-form>
 
-      <div class="flex justify-end mt-6">
+      <div class="flex justify-between mt-6">
+        <el-button @click="navigateTo('/borrower/request-loan')"> Back </el-button>
+
         <el-button type="primary" @click="nextStep">
           Continue to NID Verification
           <i class="i-material-symbols-arrow-forward ml-2"></i>
@@ -163,7 +236,11 @@ const submitLoanRequest = () => {
 
       <el-form :model="nidData" label-width="150px" label-position="top">
         <el-form-item label="NID Number" required>
-          <el-input v-model="nidData.nidNumber" placeholder="Enter your NID number" />
+          <el-input
+            v-model="nidData.nidNumber"
+            placeholder="Enter your NID number"
+            disabled
+          />
         </el-form-item>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -173,81 +250,43 @@ const submitLoanRequest = () => {
                 action="#"
                 :auto-upload="false"
                 :show-file-list="false"
-                :on-change="(file) => handleFileUpload(file.raw, 'front')"
+                :on-change="(file) => handleFileUpload(file.raw)"
                 accept="image/*"
                 class="upload-area"
               >
-                <div v-if="nidPreview.front" class="preview-container">
-                  <img :src="nidPreview.front" class="preview-image" />
+                <div v-if="nidPreview.image" class="preview-container">
+                  <img :src="nidPreview.image" class="preview-image" />
                   <div class="preview-overlay">
                     <i class="i-material-symbols-edit text-white text-2xl"></i>
                   </div>
                 </div>
                 <div v-else class="upload-placeholder">
-                  <i class="i-material-symbols-upload text-3xl text-gray-400 mb-2"></i>
+                  <i
+                    class="i-material-symbols-upload text-3xl text-gray-400 mb-2"
+                  ></i>
                   <p>Upload Front Side</p>
                 </div>
               </el-upload>
             </el-form-item>
           </div>
-
-          <div>
-            <el-form-item label="NID Back Side" required>
-              <el-upload
-                action="#"
-                :auto-upload="false"
-                :show-file-list="false"
-                :on-change="(file) => handleFileUpload(file.raw, 'back')"
-                accept="image/*"
-                class="upload-area"
-              >
-                <div v-if="nidPreview.back" class="preview-container">
-                  <img :src="nidPreview.back" class="preview-image" />
-                  <div class="preview-overlay">
-                    <i class="i-material-symbols-edit text-white text-2xl"></i>
-                  </div>
-                </div>
-                <div v-else class="upload-placeholder">
-                  <i class="i-material-symbols-upload text-3xl text-gray-400 mb-2"></i>
-                  <p>Upload Back Side</p>
-                </div>
-              </el-upload>
-            </el-form-item>
-          </div>
         </div>
-
-        <el-form-item label="Selfie with NID" required>
-          <el-upload
-            action="#"
-            :auto-upload="false"
-            :show-file-list="false"
-            :on-change="(file) => handleFileUpload(file.raw, 'selfie')"
-            accept="image/*"
-            class="upload-area selfie-upload"
-          >
-            <div v-if="nidPreview.selfie" class="preview-container">
-              <img :src="nidPreview.selfie" class="preview-image" />
-              <div class="preview-overlay">
-                <i class="i-material-symbols-edit text-white text-2xl"></i>
-              </div>
-            </div>
-            <div v-else class="upload-placeholder">
-              <i class="i-material-symbols-camera-alt text-3xl text-gray-400 mb-2"></i>
-              <p>Take a selfie holding your NID</p>
-              <p class="text-xs text-gray-500 mt-1">Make sure your face and NID are clearly visible</p>
-            </div>
-          </el-upload>
-        </el-form-item>
       </el-form>
 
       <div class="flex justify-between mt-6">
-        <el-button @click="prevStep">
-          Back
-        </el-button>
-        <el-button type="primary" @click="nextStep">
-          Continue to Income Information
-          <i class="i-material-symbols-arrow-forward ml-2"></i>
-        </el-button>
+        <el-button @click="prevStep"> Back </el-button>
+
+        <div>
+          <div v-if="isSubmitNid" class="flex justify-end mt-6">
+            <el-button type="primary" @click="submitNid">
+              Submit to NID Verification
+              <i class="i-material-symbols-arrow-forward ml-2"></i>
+            </el-button>
+          </div>
+          <el-button v-else type="primary" @click="nextStep">
+            Continue to Income Information
+            <i class="i-material-symbols-arrow-forward ml-2"></i>
+          </el-button>
+        </div>
       </div>
     </div>
 
@@ -256,66 +295,129 @@ const submitLoanRequest = () => {
       <h2 class="text-xl font-semibold mb-6">Income Information</h2>
 
       <el-form :model="incomeData" label-width="150px" label-position="top">
+        <el-form-item label="Employment Type" required>
+          <el-radio-group v-model="incomeData.employeeType">
+            <el-radio label="employer">Employed</el-radio>
+            <el-radio label="self-employer">Self-Employed</el-radio>
+          </el-radio-group>
+        </el-form-item>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <el-form-item label="Position" required>
+            <el-input
+              v-model="incomeData.position"
+              placeholder="Your position/job title"
+            />
+          </el-form-item>
+
           <el-form-item label="Monthly Income (USD)" required>
             <el-input-number
               v-model="incomeData.monthlyIncome"
-              :min="10000"
-              :step="5000"
+              :min="100"
+              :step="100"
               controls-position="right"
               class="w-full"
             />
           </el-form-item>
-
-          <el-form-item label="Occupation" required>
-            <el-input v-model="incomeData.occupation" placeholder="Your profession" />
-          </el-form-item>
         </div>
 
-        <el-form-item label="Employer/Company Name">
-          <el-input v-model="incomeData.employer" placeholder="Where you work" />
+        <el-form-item label="Occupation" required>
+          <el-input
+            v-model="incomeData.occupation"
+            placeholder="Your profession"
+          />
         </el-form-item>
 
-        <el-form-item label="Bank Statements (Last 3 months)" required>
+        <el-form-item
+          label="Employer/Company Name"
+          v-if="incomeData.employeeType === 'employer'"
+          required
+        >
+          <el-input
+            v-model="incomeData.employer"
+            placeholder="Where you work"
+          />
+        </el-form-item>
+
+        <el-form-item
+          v-if="incomeData.employeeType === 'employer'"
+          label="Bank Statement (Last 3 months)"
+          required
+        >
           <el-upload
             action="#"
-            multiple
             :auto-upload="false"
-            :file-list="incomeData.bankStatements"
+            :show-file-list="false"
             :on-change="handleBankStatementUpload"
             accept=".pdf,.jpg,.jpeg,.png"
             class="bank-statement-upload"
           >
             <el-button type="primary">
               <i class="i-material-symbols-upload mr-2"></i>
-              Upload Bank Statements
+              Upload Bank Statement
             </el-button>
             <template #tip>
               <div class="el-upload__tip">
-                Upload PDF or images of your bank statements for the last 3 months
+                Upload PDF or image of your bank statement (Max 5MB)
               </div>
             </template>
           </el-upload>
 
-          <div v-if="incomeData.bankStatements.length > 0" class="mt-4">
-            <div class="flex flex-wrap gap-2">
-              <el-tag
-                v-for="(file, index) in incomeData.bankStatements"
-                :key="index"
-                closable
-                @close="incomeData.bankStatements.splice(index, 1)"
-              >
-                {{ file.name }}
-              </el-tag>
-            </div>
+          <div v-if="incomeData.bankStatement" class="mt-4">
+            <el-tag closable @close="incomeData.bankStatement = null">
+              {{ incomeData.bankStatement.name }}
+            </el-tag>
           </div>
         </el-form-item>
       </el-form>
 
       <div class="flex justify-between mt-6">
-        <el-button @click="prevStep">
-          Back
+        <el-button @click="prevStep"> Back </el-button>
+        <el-button type="primary" @click="nextStep">
+          Continue to Loan Details
+          <i class="i-material-symbols-arrow-forward ml-2"></i>
         </el-button>
+      </div>
+    </div>
+
+    <!-- Step 4: Loan Details -->
+    <div v-if="currentStep === 4" class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-xl font-semibold mb-6">Loan Details</h2>
+
+      <el-form :model="loanData" label-width="150px" label-position="top">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <el-form-item label="Loan Amount (USD)" required>
+            <el-input-number
+              v-model="loanData.loanAmount"
+              :min="100"
+              :step="100"
+              controls-position="right"
+              class="w-full"
+            />
+          </el-form-item>
+
+          <el-form-item label="Loan Duration (Months)" required>
+            <el-input-number
+              v-model="loanData.loanDuration"
+              :min="1"
+              :max="60"
+              :step="1"
+              controls-position="right"
+              class="w-full"
+            />
+          </el-form-item>
+        </div>
+
+        <el-form-item label="Loan Type" required>
+          <el-radio-group v-model="loanData.loanType">
+            <el-radio label="personal">Personal Loan</el-radio>
+            <el-radio label="business">Business Loan</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+
+      <div class="flex justify-between mt-6">
+        <el-button @click="prevStep"> Back </el-button>
         <el-button type="primary" @click="submitLoanRequest">
           Submit Loan Request
           <i class="i-material-symbols-check-circle ml-2"></i>

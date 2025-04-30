@@ -3,35 +3,39 @@ import { ref } from 'vue'
 import {
   Menu,
   House,
-  User,
+  Coin,
   Setting,
   Folder,
-  Document,
   ArrowRight,
-  ArrowDown
+  ArrowDown,
+  Money,
+  SwitchButton
 } from '@element-plus/icons-vue'
+
 
 const isOpen = ref(true)
 const activeSubmenu = ref(null)
 
 const menuItems = [
-  { icon: House, label: 'Dashboard', to: '/' },
+  { icon: House, label: 'Dashboard', to: '/admin/dashboard' },
+  { icon: Coin, label: 'Interest Rate', to: '/admin/interest-rate' },
   {
     icon: Folder,
-    label: 'Projects',
+    label: 'Loans',
     children: [
-      { label: 'Project A', to: '/projects/a' },
-      { label: 'Project B', to: '/projects/b' }
+      { label: 'Active Loans', to: '/borrower/loans/active' },
+      { label: 'Loans History', to: '/borrower/loans/history' }
     ]
   },
-  { icon: User, label: 'Profile', to: '/profile' },
-  { icon: Setting, label: 'Settings', to: '/settings' }
+  { icon: Setting, label: 'Settings', to: '/borrower/settings' },
+  { icon: SwitchButton, label: 'Logout', to: '/borrower/logout' }
 ]
 
 const toggleSubmenu = (label) => {
   activeSubmenu.value = activeSubmenu.value === label ? null : label
 }
 </script>
+
 
 <template>
   <aside
@@ -40,7 +44,7 @@ const toggleSubmenu = (label) => {
   >
     <!-- Header -->
     <div class="flex items-center justify-between px-4 py-5">
-      <h1 class="text-2xl font-extrabold text-primary-700 tracking-wide transition-opacity duration-300" v-if="isOpen">MyApp</h1>
+      <h1 class="text-2xl font-extrabold text-primary-700 tracking-wide transition-opacity duration-300" v-if="isOpen">JORNG-KA</h1>
       <el-button
         :icon="Menu"
         size="small"
@@ -55,8 +59,8 @@ const toggleSubmenu = (label) => {
         <li v-for="(item, index) in menuItems" :key="index">
           <!-- Menu Item -->
           <div
-            class="flex items-center px-3 py-2 rounded-lg hover:bg-primary-500 hover:text-white dark:hover:bg-primary-600 cursor-pointer transition-all duration-200 group"
-            @click="item.children ? toggleSubmenu(item.label) : null"
+            class="flex items-center px-3 py-2 rounded-lg hover:bg-primary-500 hover:text-white cursor-pointer transition-all duration-200 group"
+            @click="item.children ? toggleSubmenu(item.label) : navigateTo(item.to)"
           >
             <el-icon :size="20" class="mr-3 text-primary-700 group-hover:text-white">
               <component :is="item.icon" />
@@ -66,6 +70,7 @@ const toggleSubmenu = (label) => {
               <component :is="activeSubmenu === item.label ? ArrowDown : ArrowRight" />
             </el-icon>
           </div>
+
 
           <!-- Submenu -->
           <transition name="fade">
@@ -77,6 +82,7 @@ const toggleSubmenu = (label) => {
                 v-for="(child, cIndex) in item.children"
                 :key="cIndex"
                 class="text-sm text-gray-600 dark:text-black hover:text-primary-600 cursor-pointer px-2 py-1 rounded-md transition"
+                @click="navigateTo(child.to)"
               >
                 {{ child.label }}
               </li>

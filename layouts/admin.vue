@@ -37,12 +37,14 @@ const role = user?.role
 onMounted(() => {
   // Simulate async check
   setTimeout(() => {
-    if (role !== 1) {
-      console.log('Unauthorized access: Admin role required')
-      navigateTo('/unauthorized')
-    } else {
-      loading.value = false
-    }
+    // if (role !== 2) {
+    //   console.log('Unauthorized access: Borrower role required')
+    //   navigateTo('/unauthorized')
+    // } else {
+    //   loading.value = false
+    // }
+
+    loading.value = false
   }, 1000) // Reduced delay for better UX
 })
 
@@ -53,7 +55,6 @@ watch(() => route.path, () => {
   // Add any route-specific logic here
 })
 </script>
-
 
 <style scoped>
 .app-container {
