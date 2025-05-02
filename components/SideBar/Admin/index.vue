@@ -9,7 +9,10 @@ import {
   ArrowRight,
   ArrowDown,
   Money,
-  SwitchButton
+  View,
+  SwitchButton,
+  Document,
+  Wallet
 } from '@element-plus/icons-vue'
 
 
@@ -20,15 +23,24 @@ const menuItems = [
   { icon: House, label: 'Dashboard', to: '/admin/dashboard' },
   { icon: Coin, label: 'Interest Rate', to: '/admin/interest-rate' },
   {
-    icon: Folder,
-    label: 'Loans',
+    icon: Money,
+    label: 'Request Loans',
     children: [
-      { label: 'Active Loans', to: '/borrower/loans/active' },
-      { label: 'Loans History', to: '/borrower/loans/history' }
+      { label: 'Request Loan', to: '/admin/request-loan/active' },
+      { label: 'History', to: '/admin/request-loan/history' }
     ]
   },
-  { icon: Setting, label: 'Settings', to: '/borrower/settings' },
-  { icon: SwitchButton, label: 'Logout', to: '/borrower/logout' }
+  {
+    icon: Wallet,
+    label: 'Loans',
+    children: [
+      { label: 'Active Loans', to: '/admin/loans/active' },
+      { label: 'Loans History', to: '/admin/loans/history' }
+    ]
+  },
+  { icon: Document, label: 'Credit Score', to: '/admin/credit-score' },
+  { icon: Setting, label: 'Settings', to: '/admin/settings' },
+  { icon: SwitchButton, label: 'Logout', to: '/admin/logout' }
 ]
 
 const toggleSubmenu = (label) => {
