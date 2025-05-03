@@ -1,5 +1,5 @@
 <script setup>
-import { useAdminLoanStore } from '~/store/admin_loan.js'
+import { useAdminLoanStore } from '~/store/admin/admin_loan.js'
 
 definePageMeta({
   layout: 'admin',
@@ -34,15 +34,63 @@ const currentPage = ref(1);
 const pageSize = ref(10);
 
 const loanStore = useAdminLoanStore()
-const { getLoan } = loanStore
+const { getLoan, paid } = loanStore
 
 const fetchData = async (page = 1) => {
   loading.value = true;
   try {
-    const response = await getLoan({page: page});
+    const response = await getLoan({page: page, active: 'unpaid'});
     apiResponse.value = response; // Access the nested data property
     // Update pagination
     currentPage.value = page;
+  } finally {
+    loading.value = false;
+  }
+};
+
+//repayment paid
+const paidLoan = async (loanId) => {
+  try {
+    // Show confirmation dialog
+    await ElMessageBox.confirm(
+      'Are you sure you want to mark this repayment as paid?',
+      'Confirm Payment',
+      {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }
+    );
+
+    loading.value = true;
+    const response = await paid(loanId);
+
+    // Show success message
+    ElMessage({
+      message: 'Repayment marked as paid successfully',
+      type: 'success',
+    });
+
+    // Refresh the loan details
+    if (selectedLoan.value) {
+      const updatedLoan = apiResponse.value.data.find(loan => loan.id === selectedLoan.value.id);
+      if (updatedLoan) {
+        selectedLoan.value = {
+          ...updatedLoan,
+        };
+      }
+    }
+
+    // Refresh the main table data
+    fetchData(currentPage.value);
+    showDetailsDialog.value = false
+  } catch (error) {
+    if (error !== 'cancel') {
+      ElMessage({
+        message: 'Failed to mark repayment as paid',
+        type: 'error',
+      });
+    }
   } finally {
     loading.value = false;
   }
@@ -174,6 +222,16 @@ onMounted(() => {
         class="w-full"
       >
         <el-table-column prop="id" label="ID" width="80" />
+        <el-table-column label="Name">
+          <template #default="{ row }">
+            {{ row.name }}
+          </template>
+        </el-table-column>
+        <el-table-column label="Phone">
+          <template #default="{ row }">
+            {{ row.phone }}
+          </template>
+        </el-table-column>
         <el-table-column label="Amount">
           <template #default="{ row }">
             ${{ parseFloat(row.loan_repayment).toFixed(2) }}
@@ -253,7 +311,7 @@ onMounted(() => {
         <!-- Repayment Schedule Section -->
         <div>
           <h3 class="text-lg font-medium text-gray-800 mb-4">Repayment Schedule</h3>
-          <el-table :data="selectedLoan.schedule_repayment" border class="w-full">
+          <el-table :data="selectedLoan.schedule_repayments" border class="w-full">
             <el-table-column prop="id" label="ID" width="80" />
             <el-table-column label="Due Date" width="150">
               <template #default="{ row }">
@@ -277,12 +335,26 @@ onMounted(() => {
                 {{ row.paid_date ? formatSimpleDate(row.paid_date) : 'Not paid' }}
               </template>
             </el-table-column>
+            <el-table-column label="Actions" width="120" align="center">
+              <template #default="{ row }">
+                <el-button
+                  v-if="row.status === '0'"
+                  type="success"
+                  size="small"
+                  @click="paidLoan(row.id)"
+                  :loading="loading"
+                >
+                  Paid
+                </el-button>
+                <span v-else class="text-gray-400">-</span>
+              </template>
+            </el-table-column>
           </el-table>
         </div>
 
         <!-- User Information Section -->
         <div v-if="selectedLoan.user">
-          <h3 class="text-sm font-medium text-gray-500 mb-2">User Information</h3>
+          <h3 class="text-lg font-medium text-gray-800 mb-4">User Information</h3>
           <div class="bg-gray-50 p-4 rounded-md">
             <p><span class="font-medium">Email:</span> {{ selectedLoan.user.email }}</p>
             <p><span class="font-medium">Phone:</span> {{ selectedLoan.user.phone }}</p>

@@ -1,5 +1,5 @@
 <script setup>
-import { useAdminLoanStore } from '~/store/admin_loan.js'
+import { useAdminLoanStore } from '~/store/admin/admin_loan.js'
 
 definePageMeta({
   layout: 'admin',
@@ -39,7 +39,7 @@ const { getLoan } = loanStore
 const fetchData = async (page = 1) => {
   loading.value = true;
   try {
-    const response = await getLoan({page: page});
+    const response = await getLoan({page: page, active: 'paid'});
     apiResponse.value = response; // Access the nested data property
     // Update pagination
     currentPage.value = page;
@@ -111,7 +111,7 @@ onMounted(() => {
 <template>
   <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-8">
-      <h1 class="text-2xl font-bold text-gray-800">Loans History</h1>
+      <h1 class="text-2xl font-bold text-gray-800">Active Loans</h1>
     </div>
 
     <!-- Summary Cards -->
@@ -174,6 +174,16 @@ onMounted(() => {
         class="w-full"
       >
         <el-table-column prop="id" label="ID" width="80" />
+        <el-table-column label="Name">
+          <template #default="{ row }">
+            {{ row.name }}
+          </template>
+        </el-table-column>
+        <el-table-column label="Phone">
+          <template #default="{ row }">
+            {{ row.phone }}
+          </template>
+        </el-table-column>
         <el-table-column label="Amount">
           <template #default="{ row }">
             ${{ parseFloat(row.loan_repayment).toFixed(2) }}
@@ -253,7 +263,7 @@ onMounted(() => {
         <!-- Repayment Schedule Section -->
         <div>
           <h3 class="text-lg font-medium text-gray-800 mb-4">Repayment Schedule</h3>
-          <el-table :data="selectedLoan.schedule_repayment" border class="w-full">
+          <el-table :data="selectedLoan.schedule_repayments" border class="w-full">
             <el-table-column prop="id" label="ID" width="80" />
             <el-table-column label="Due Date" width="150">
               <template #default="{ row }">
@@ -282,7 +292,7 @@ onMounted(() => {
 
         <!-- User Information Section -->
         <div v-if="selectedLoan.user">
-          <h3 class="text-sm font-medium text-gray-500 mb-2">User Information</h3>
+          <h3 class="text-lg font-medium text-gray-800 mb-4">User Information</h3>
           <div class="bg-gray-50 p-4 rounded-md">
             <p><span class="font-medium">Email:</span> {{ selectedLoan.user.email }}</p>
             <p><span class="font-medium">Phone:</span> {{ selectedLoan.user.phone }}</p>

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import AdminLoanService from '~/services/AdminLoanService.js'
+import AdminLoanService from '~/services/Admin/AdminLoanService.js'
 
 export const useAdminLoanStore = defineStore('admin_loans', () => {
   const requestLoan = ref({})
@@ -16,8 +16,20 @@ export const useAdminLoanStore = defineStore('admin_loans', () => {
     }
   }
 
+  //paid
+  const paid = async (repaymentId) => {
+    try {
+      const { data } = await adminLoanService.paid(repaymentId)
+      return data
+    } catch (error) {
+      ElMessage.error(error.message || 'Paid failed')
+      throw new Error(`Paid failed: ${error.message || 'Unknown error'}`)
+    }
+  }
+
   return {
     RequestLoan: computed(() => requestLoan.value),
     getLoan,
+    paid
   }
 })

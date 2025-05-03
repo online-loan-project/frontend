@@ -12,7 +12,8 @@ import {
   View,
   SwitchButton,
   Document,
-  Wallet
+  Wallet,
+  User
 } from '@element-plus/icons-vue'
 
 
@@ -39,6 +40,7 @@ const menuItems = [
     ]
   },
   { icon: Document, label: 'Credit Score', to: '/admin/credit-score' },
+  { icon: User, label: 'Borrower Management', to: '/admin/borrower-management' },
   { icon: Setting, label: 'Settings', to: '/admin/settings' },
   { icon: SwitchButton, label: 'Logout', to: '/admin/logout' }
 ]
