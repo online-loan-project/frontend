@@ -96,7 +96,6 @@ onBeforeUnmount(() => {
         class="w-10 h-10 rounded-full border-2 border-primary-600 shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 active:translate-y-0"
         @click="navigate('/dashboard')"
         fit="contain"
-        :preview-src-list="[user.profile.image]"
         />
     </div>
 
