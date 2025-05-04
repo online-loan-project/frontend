@@ -10,7 +10,8 @@ const { value: user } = useCookie('user')
 
 const navLinks = [
   { name: 'home', label: 'Home', path: '/' },
-  { name: 'about', label: 'About', path: '/about' },
+  { name: 'how-it-works', label: 'How It Works', path: '/how-it-works' },
+  { name: 'about', label: 'About', path: '/about-us' },
   { name: 'contact', label: 'Contact', path: '/contact' }
 ]
 
