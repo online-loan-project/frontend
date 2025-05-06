@@ -64,7 +64,7 @@ const successButton = async () => {
     }
 
     // Success handling
-    setTimeout(() => navigateTo('/dashboard'), 1000)
+    setTimeout(() => navigateTo('/login'), 1000)
 
   } catch (error) {
     console.error('Liveliness verification failed:', error)
