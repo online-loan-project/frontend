@@ -63,6 +63,9 @@ const successButton = async () => {
       throw new Error(response.message || 'Verification failed. Please try again.')
     }
 
+    cookies.remove('access_token')
+    cookies.remove('user')
+    cookies.remove('tokenType')
     // Success handling
     setTimeout(() => navigateTo('/login'), 1000)
 
@@ -137,7 +140,7 @@ onUnmounted(() => {
               Success! Verification complete.
             </div>
             <el-button v-if="successVisible" type="primary" @click="successButton">
-              Go to Verify Phone Number
+              Success
             </el-button>
           </div>
         </div>
