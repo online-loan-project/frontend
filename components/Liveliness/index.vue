@@ -3,7 +3,8 @@ import { ref } from 'vue'
 import { useFaceDetection } from '~/composables/useLiveliness.js'
 import { onMounted, onUnmounted } from 'vue'
 import { useLivelinessStore } from '~/store/liveliness.js'
-
+import { useCookies } from 'vue3-cookies'
+const { cookies } = useCookies()
 const {
   videoElement,
   canvasElement,
