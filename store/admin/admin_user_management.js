@@ -16,8 +16,21 @@ export const useAdminUserManagementStore = defineStore('admin_loans', () => {
     }
   }
 
+  //staus
+  const staus = async (id, payload) => {
+    try {
+      const { data } = await adminUserManagementService.staus(id, payload)
+      requestLoan.value = data || {}
+      return data
+    } catch (error) {
+      ElMessage.error(error.message || 'Get Loan failed')
+      throw new Error(`Get Loan failed: ${error.message || 'Unknown error'}`)
+    }
+  }
+
   return {
     RequestLoan: computed(() => requestLoan.value),
     index,
+    staus,
   }
 })

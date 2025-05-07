@@ -1,5 +1,5 @@
 <script setup>
-import { useDashboardStore } from '~/store/dashboard.js'
+import { useDashboardStore } from '~/store/admin_dashboard.js'
 
 definePageMeta({
   layout: 'admin',

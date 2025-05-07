@@ -21,7 +21,6 @@ export const useHttp = async (url, options = {}) => {
     },
     // Ensure the body is either FormData or JSON
     body: options.body instanceof FormData ? options.body : JSON.stringify(options.body),
-
     credentials: 'include', // <-- This will send cookies/auth cross-origin
     mode: 'cors',           // <-- Explicitly set CORS mode
   }
@@ -31,19 +30,44 @@ export const useHttp = async (url, options = {}) => {
   } catch (error) {
     console.error('HTTP Request failed:', error)
 
-    // Handle error message display
+    // Handle error message display based on your API's error structure
     if (error.data) {
-      // If there's a specific message in the error response
-      if (error.data.message) {
-        ElMessage.error(error.data.message)
+      // Check for the alert.message structure
+      if (error.data.alert?.message) {
+        ElMessage.error(error.data.alert.message)
+        // ElNotification({
+        //   title: 'Error',
+        //   message: error.data.alert.message,
+        //   type: 'warning',
+        //   duration: 200,
+        // })
       }
-      // If there are validation errors, you might want to show them all
+      // Fallback to other error message formats
+      else if (error.data.message) {
+        ElNotification({
+          title: 'Error',
+          message: error.data.message,
+          type: 'warning',
+          duration: 1000,
+        })
+      }
+      // Handle validation errors if they exist
       else if (error.data.errors) {
         const errorMessages = Object.values(error.data.errors).flat().join('\n')
-        ElMessage.error(errorMessages)
+        ElNotification({
+          title: 'Error',
+          message: errorMessages,
+          type: 'warning',
+          duration: 1000,
+        })
       }
     } else {
-      ElMessage.error(error.message || 'Unknown error occurred')
+      ElNotification({
+        title: 'Error',
+        message: error.message || 'Unknown error occurred',
+        type: 'warning',
+        duration: 1000,
+      })
     }
 
     throw error

@@ -11,7 +11,6 @@ export const useRequestLoanStore = defineStore('request-loan', () => {
       requestLoan.value = data || {}
       return data
     } catch (error) {
-      ElMessage.error(error.message || 'Get Request Loan failed')
       throw new Error(`Get Request Loan failed: ${error.message || 'Unknown error'}`)
     }
   }
@@ -23,7 +22,6 @@ export const useRequestLoanStore = defineStore('request-loan', () => {
       requestLoan.value = data || {}
       return data
     } catch (error) {
-      ElMessage.error(error.message || 'Get Request Loan failed')
       throw new Error(`Get Request Loan failed: ${error.message || 'Unknown error'}`)
     }
   }
@@ -33,9 +31,9 @@ export const useRequestLoanStore = defineStore('request-loan', () => {
     try {
       const { data } = await requestLoanService.store(params)
       requestLoan.value = data || {}
+      console.log(data)
       return data
     } catch (error) {
-      ElMessage.error(error.message || 'Get Request Loan failed')
       throw new Error(`Get Request Loan failed: ${error.message || 'Unknown error'}`)
     }
   }

@@ -1,14 +1,14 @@
-import BaseService from './BaseService'
+import BaseService from '../BaseService.js'
 
 let instance = null
-class DashboardService extends BaseService {
+class AdminDashboardService extends BaseService {
   constructor() {
-    super('borrower')
+    super('admin')
   }
 
   static getInstance() {
     if (!instance) {
-      instance = new DashboardService()
+      instance = new AdminDashboardService()
     }
     return instance
   }
@@ -23,4 +23,4 @@ class DashboardService extends BaseService {
   }
 }
 
-export default DashboardService
+export default AdminDashboardService

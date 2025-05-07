@@ -23,6 +23,10 @@ class AdminUserManagementService extends BaseService {
     return await this._get(`${this._prefix}/borrowers?${queryParams}`, {})
   }
 
+  async staus(id, payload = {}) {
+    return await this._post(`${this._prefix}/borrowers/status/${id}`, payload);
+  }
+
 }
 
 export default AdminUserManagementService
