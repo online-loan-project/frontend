@@ -29,7 +29,6 @@ export const useAuthStore = defineStore('auth', () => {
 
       return data
     } catch (error) {
-      ElMessage.error(error.message || 'Login failed')
       throw new Error(`Login failed: ${error.message || 'Unknown error'}`)
     }
   }

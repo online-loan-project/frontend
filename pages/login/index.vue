@@ -26,7 +26,6 @@ const handleLogin = async () => {
     navigateTo('/dashboard')
   } catch (error) {
     console.error('Login failed:', error)
-    ElMessage.error(error.message || 'Login failed')
   }
 }
 </script>
