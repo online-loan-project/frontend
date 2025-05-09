@@ -21,6 +21,12 @@ function redirectBasedOnRole() {
 
 // Run only on client side
 onMounted(() => {
+  //check telegram
+  if (!user.telegram_chat_id) {
+    ElMessage.error('Please connect your telegram account')
+    return navigateTo('/telegram')
+  }
+
   redirectBasedOnRole()
 })
 </script>
