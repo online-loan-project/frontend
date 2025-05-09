@@ -45,21 +45,25 @@
             show-icon
             class="mb-4"
           />
-          <el-button
-            type="primary"
-            class="w-full"
-            @click="retryLogin"
-          >
-            <el-icon class="mr-2"><i-ep-refresh /></el-icon>
-            Try Again
-          </el-button>
-          <el-button
-            class="w-full"
-            @click="$router.push('/login')"
-          >
-            <el-icon class="mr-2"><i-ep-back /></el-icon>
-            Back to Login
-          </el-button>
+          <div>
+            <el-button
+              type="primary"
+              class="w-full"
+              @click="retryLogin"
+            >
+              <el-icon class="mr-2"><refresh /></el-icon>
+              Try Again
+            </el-button>
+          </div>
+          <div>
+            <el-button
+              class="w-full"
+              @click="$router.push('/login')"
+            >
+              <el-icon class="mr-2"><refresh /></el-icon>
+              Back to Login
+            </el-button>
+          </div>
         </template>
 
         <!-- Success state (briefly shown before redirect) -->
@@ -83,6 +87,7 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import { useGoogleAuthStore } from '~/store/google'
+import { Refresh } from '@element-plus/icons-vue'
 
 definePageMeta({ layout: 'default' })
 
