@@ -122,12 +122,14 @@ const handleGoogleCallback = async () => {
 
   try {
     const { data } = await googleAuth.handleGoogleCallback({ code })
-    console.log('Google login successful:', response)
+    console.log('Google login successful:', data)
 
     // Complete progress
     progress.value = 100
     await new Promise(resolve => setTimeout(resolve, 500))
     if (!data.telegram_chat_id) {
+      clearInterval(progressInterval)
+      processing.value = false
       ElMessage.error('Please connect your telegram account')
       return navigateTo('/telegram')
     }
