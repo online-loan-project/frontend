@@ -63,7 +63,7 @@ const statusBadgeClass = (status) => {
     case 'rejected':
       return 'rejected';
     default: // pending
-      return 'pending';
+      return 'rejected';
   }
 };
 
