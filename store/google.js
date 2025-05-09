@@ -13,7 +13,7 @@ export const useGoogleAuthStore = defineStore('google-auth', () => {
   //handleGoogleCallback
   const handleGoogleCallback = async (code) => {
     try {
-      const { data } = await googleAuthService.callBack(code);
+      const data = await googleAuthService.callBack(code);
       const { user: userData, token: authToken } = data || {};
 
       if (!authToken) {
