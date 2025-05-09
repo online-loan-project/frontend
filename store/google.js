@@ -14,7 +14,7 @@ export const useGoogleAuthStore = defineStore('google-auth', () => {
   const handleGoogleCallback = async (code) => {
     try {
       const data = await googleAuthService.callBack(code);
-      const { user: userData, token: authToken } = data || {};
+      const { data: userData, token: authToken } = data || {};
       if (!userData) {
         throw new Error('User data not found');
       }
