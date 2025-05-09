@@ -15,6 +15,9 @@ export const useGoogleAuthStore = defineStore('google-auth', () => {
     try {
       const data = await googleAuthService.callBack(code);
       const { user: userData, token: authToken } = data || {};
+      if (!userData) {
+        throw new Error('User data not found');
+      }
 
       if (!authToken) {
         throw new Error('Invalid Credentials');

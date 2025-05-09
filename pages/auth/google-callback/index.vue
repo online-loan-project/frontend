@@ -130,7 +130,7 @@ const handleGoogleCallback = async () => {
 
     // Redirect to dashboard or intended route
     const redirectPath = route.query.redirect || '/dashboard'
-    await router.push(redirectPath)
+    await navigateTo(redirectPath)
   } catch (err) {
     console.error('Google login failed:', err)
     error.value = err.message || 'Failed to authenticate with Google. Please try again.'
