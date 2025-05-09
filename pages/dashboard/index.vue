@@ -12,6 +12,7 @@ function redirectBasedOnRole() {
     ElMessage.error('You are not logged in')
     return navigateTo('/login')
   }
+  //check telegram
   if (user.role == 2) {
     navigateTo('/borrower/dashboard')
   } else if (user.role == 1) {
