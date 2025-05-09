@@ -21,7 +21,7 @@ const email = ref('')
 const password = ref('')
 
 const googleLoginUrl = () => {
-  window.location.href = `https://api.jorngka.online/api/auth/google`
+  window.location.href = `https://api.jorngka.online/auth/google`
 }
 
 const handleLogin = async () => {

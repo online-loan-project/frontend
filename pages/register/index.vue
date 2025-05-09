@@ -90,7 +90,7 @@ const rules = {
 }
 
 const googleLoginUrl = () => {
-  window.location.href = `https://api.jorngka.online/api/auth/google`
+  window.location.href = `https://api.jorngka.online/auth/google`
 }
 
 const handleRegister = async () => {
