@@ -121,13 +121,16 @@ const handleGoogleCallback = async () => {
   const progressInterval = simulateProgress()
 
   try {
-    const response = await googleAuth.handleGoogleCallback({ code })
+    const { data } = await googleAuth.handleGoogleCallback({ code })
     console.log('Google login successful:', response)
 
     // Complete progress
     progress.value = 100
     await new Promise(resolve => setTimeout(resolve, 500))
-
+    if (!data.telegram_chat_id) {
+      ElMessage.error('Please connect your telegram account')
+      return navigateTo('/telegram')
+    }
     // Redirect to dashboard or intended route
     const redirectPath = route.query.redirect || '/dashboard'
     await navigateTo(redirectPath)

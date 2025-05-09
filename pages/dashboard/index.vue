@@ -13,10 +13,6 @@ function redirectBasedOnRole() {
     return navigateTo('/login')
   }
   //check telegram
-  if (!user.telegram_chat_id) {
-    ElMessage.error('Please connect your telegram account')
-    return navigateTo('/telegram')
-  }
   if (user.role == 2) {
     navigateTo('/borrower/dashboard')
   } else if (user.role == 1) {
