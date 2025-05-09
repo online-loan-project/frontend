@@ -20,6 +20,10 @@ const { login } = authStore
 const email = ref('')
 const password = ref('')
 
+const googleLoginUrl = () => {
+  window.location.href = `https://api.jorngka.online/api/auth/google`
+}
+
 const handleLogin = async () => {
   try {
     await login({ email: email.value, password: password.value })
@@ -51,7 +55,12 @@ const handleLogin = async () => {
           <el-button type="primary" class="w-full h-10 rounded-lg" native-type="submit">Login</el-button>
         </div>
         <div class="flex justify-between items-center mt-1">
-          <el-button type="danger" class="w-full h-10 rounded-lg">Login with Google</el-button>
+          <el-button
+            type="danger"
+            class="w-full h-10 rounded-lg"
+            @click="googleLoginUrl"
+          >Login with Google
+          </el-button>
         </div>
       </el-form>
 

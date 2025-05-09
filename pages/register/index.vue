@@ -2,7 +2,6 @@
 import { useAuthStore } from '~/store/auth.js'
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Plus } from '@element-plus/icons-vue'
 
 definePageMeta({
   layout: 'auth',
@@ -35,33 +34,45 @@ const formRef = ref(null) // Add this ref for form validation
 
 const rules = {
   first_name: [
-    { required: true, message: 'Please input first name', trigger: 'blur' }
+    { required: true, message: 'Please input first name', trigger: 'blur' },
   ],
   last_name: [
-    { required: true, message: 'Please input last name', trigger: 'blur' }
+    { required: true, message: 'Please input last name', trigger: 'blur' },
   ],
   gender: [
-    { required: true, message: 'Please select gender', trigger: 'change' }
+    { required: true, message: 'Please select gender', trigger: 'change' },
   ],
   dob: [
-    { required: true, message: 'Please select date of birth', trigger: 'change' }
+    {
+      required: true,
+      message: 'Please select date of birth',
+      trigger: 'change',
+    },
   ],
   address: [
-    { required: true, message: 'Please input address', trigger: 'blur' }
+    { required: true, message: 'Please input address', trigger: 'blur' },
   ],
   email: [
     { required: true, message: 'Please input email', trigger: 'blur' },
-    { type: 'email', message: 'Please input correct email format', trigger: ['blur', 'change'] }
+    {
+      type: 'email',
+      message: 'Please input correct email format',
+      trigger: ['blur', 'change'],
+    },
   ],
   phone: [
-    { required: true, message: 'Please input phone number', trigger: 'blur' }
+    { required: true, message: 'Please input phone number', trigger: 'blur' },
   ],
   image: [
-    { required: true, message: 'Please upload an image', trigger: 'change' }
+    { required: true, message: 'Please upload an image', trigger: 'change' },
   ],
   password: [
     { required: true, message: 'Please input password', trigger: 'blur' },
-    { min: 6, message: 'Password must be at least 6 characters', trigger: ['blur', 'change'] }
+    {
+      min: 6,
+      message: 'Password must be at least 6 characters',
+      trigger: ['blur', 'change'],
+    },
   ],
   password_confirmation: [
     { required: true, message: 'Please confirm password', trigger: 'blur' },
@@ -73,11 +84,14 @@ const rules = {
           callback()
         }
       },
-      trigger: ['blur', 'change']
-    }
-  ]
+      trigger: ['blur', 'change'],
+    },
+  ],
 }
 
+const googleLoginUrl = () => {
+  window.location.href = `https://api.jorngka.online/api/auth/google`
+}
 
 const handleRegister = async () => {
   try {
@@ -106,7 +120,8 @@ const handleRegister = async () => {
     console.log('Registration successful:', form.value)
     navigateTo('/telegram')
   } catch (error) {
-    if (error.name !== 'Error') { // Skip showing validation errors as they're already shown
+    if (error.name !== 'Error') {
+      // Skip showing validation errors as they're already shown
       console.error('Registration failed:', error)
       ElMessage.error(error.message || 'Registration failed')
     }
@@ -139,7 +154,11 @@ const handleRegister = async () => {
           class="space-y-4"
         >
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <el-form-item label="First Name" prop="first_name" class="input-margin">
+            <el-form-item
+              label="First Name"
+              prop="first_name"
+              class="input-margin"
+            >
               <el-input
                 v-model="form.first_name"
                 placeholder="First name"
@@ -148,7 +167,11 @@ const handleRegister = async () => {
               />
             </el-form-item>
 
-            <el-form-item label="Last Name" prop="last_name" class="input-margin">
+            <el-form-item
+              label="Last Name"
+              prop="last_name"
+              class="input-margin"
+            >
               <el-input
                 v-model="form.last_name"
                 placeholder="Last name"
@@ -199,7 +222,11 @@ const handleRegister = async () => {
               />
             </el-form-item>
 
-            <el-form-item label="Phone Number" prop="phone" class="input-margin">
+            <el-form-item
+              label="Phone Number"
+              prop="phone"
+              class="input-margin"
+            >
               <el-input
                 v-model="form.phone"
                 placeholder="Phone number"
@@ -251,7 +278,10 @@ const handleRegister = async () => {
             </el-button>
           </div>
           <div class="flex justify-between items-center mt-1">
-            <el-button type="danger" class="w-full h-10 rounded-lg"
+            <el-button
+              type="danger"
+              class="w-full h-10 rounded-lg"
+              @click="googleLoginUrl"
               >Login with Google
             </el-button>
           </div>
