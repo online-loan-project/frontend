@@ -1,9 +1,8 @@
 export default defineNuxtRouteMiddleware((to) => {
   if (to.path === '/dashboard') {
     const user = useCookie('user').value
-
-    console.log(user.role)
-    if (!user?.role) {
+    //if no user redirect to login
+    if (!user) {
       return navigateTo('/login')
     }
 

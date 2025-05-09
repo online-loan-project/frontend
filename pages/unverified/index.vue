@@ -1,12 +1,10 @@
 <script setup>
-import { useRouter } from 'vue-router'
 import { Phone } from '@element-plus/icons-vue'
 
-const router = useRouter()
-
-const goBack = () => {
-  router.back()
-};
+useSeoMeta({
+  title: 'JorngKa | Unverified',
+  description: 'Get approved for fast, secure loans up to $1000 with competitive rates. Apply online in minutes with JorngKa.'
+})
 </script>
 
 <template>
@@ -19,8 +17,8 @@ const goBack = () => {
       <p class="text-gray-600 mt-2">
         Please verify your phone number before proceeding.
       </p>
-      <el-button type="primary" class="mt-4 w-full" @click="goBack">
-        Go Back
+      <el-button type="primary" class="mt-4 w-full" @click="navigateTo('/otp')">
+        Go Verify
       </el-button>
     </el-card>
   </div>

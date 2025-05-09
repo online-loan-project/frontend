@@ -21,20 +21,55 @@ export const useHttp = async (url, options = {}) => {
     },
     // Ensure the body is either FormData or JSON
     body: options.body instanceof FormData ? options.body : JSON.stringify(options.body),
-    async onResponseError({ request, response, options }) {
-      if (response.status === 401) {
-        cookie.value = null // Clear the token on 401
-      } else if (response.status !== 422) {
-        ElMessage.error(response.data?.message || 'Unknown error')
-      }
-    },
+    credentials: 'include', // <-- This will send cookies/auth cross-origin
+    mode: 'cors',           // <-- Explicitly set CORS mode
   }
 
   try {
     return await $fetch(url, { baseURL, ...options })
   } catch (error) {
     console.error('HTTP Request failed:', error)
-    ElMessage.error(error.message || 'Unknown error occurred')
+
+    // Handle error message display based on your API's error structure
+    if (error.data) {
+      // Check for the alert.message structure
+      if (error.data.alert?.message) {
+        ElMessage.error(error.data.alert.message)
+        // ElNotification({
+        //   title: 'Error',
+        //   message: error.data.alert.message,
+        //   type: 'warning',
+        //   duration: 200,
+        // })
+      }
+      // Fallback to other error message formats
+      else if (error.data.message) {
+        ElNotification({
+          title: 'Error',
+          message: error.data.message,
+          type: 'warning',
+          duration: 1000,
+        })
+      }
+      // Handle validation errors if they exist
+      else if (error.data.errors) {
+        const errorMessages = Object.values(error.data.errors).flat().join('\n')
+        ElNotification({
+          title: 'Error',
+          message: errorMessages,
+          type: 'warning',
+          duration: 1000,
+        })
+      }
+    } else {
+      ElNotification({
+        title: 'Error',
+        message: error.message || 'Unknown error occurred',
+        type: 'warning',
+        duration: 1000,
+      })
+    }
+
     throw error
   }
 }

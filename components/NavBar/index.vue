@@ -10,7 +10,8 @@ const { value: user } = useCookie('user')
 
 const navLinks = [
   { name: 'home', label: 'Home', path: '/' },
-  { name: 'about', label: 'About', path: '/about' },
+  { name: 'how-it-works', label: 'How It Works', path: '/how-it-works' },
+  { name: 'about', label: 'About', path: '/about-us' },
   { name: 'contact', label: 'Contact', path: '/contact' }
 ]
 
@@ -91,11 +92,11 @@ onBeforeUnmount(() => {
         Login / Register
       </el-button>
       <el-image
-        v-if="user"
+        v-if="user && user.profile && user.profile.image"
         :src="user.profile.image"
         class="w-10 h-10 rounded-full border-2 border-primary-600 shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 active:translate-y-0"
         @click="navigate('/dashboard')"
-        :preview-src-list="[user.profile.image]"
+        fit="contain"
         />
     </div>
 

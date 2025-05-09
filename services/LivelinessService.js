@@ -1,14 +1,14 @@
 import BaseService from './BaseService'
 
 let instance = null
-class UserService extends BaseService {
+class LivelinessService extends BaseService {
   constructor() {
-    super('borrower')
+    super('')
   }
 
   static getInstance() {
     if (!instance) {
-      instance = new UserService()
+      instance = new LivelinessService()
     }
     return instance
   }
@@ -19,4 +19,4 @@ class UserService extends BaseService {
   }
 }
 
-export default UserService
+export default LivelinessService

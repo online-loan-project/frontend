@@ -1,6 +1,10 @@
 <script setup>
+import { ref } from 'vue'
 import { useFaceDetection } from '~/composables/useLiveliness.js'
 import { onMounted, onUnmounted } from 'vue'
+import { useLivelinessStore } from '~/store/liveliness.js'
+import { useCookies } from 'vue3-cookies'
+const { cookies } = useCookies()
 const {
   videoElement,
   canvasElement,
@@ -8,13 +12,70 @@ const {
   actionInstruction,
   successVisible,
   capturedImages,
-  closeFaceDetection
+  closeFaceDetection,
+  setupFaceDetection
 } = useFaceDetection()
+
+const isLoading = ref(false)
+const errorMessage = ref(null)
+
 const handleBeforeUnload = (e) => {
-  e.preventDefault()
-  // Chrome requires returnValue to be set
-  e.returnValue = 'Are you sure you want to leave? Your verification progress may be lost.'
-  return e.returnValue
+  if (capturedImages.value.length > 0) {
+    e.preventDefault()
+    e.returnValue = 'Are you sure you want to leave? Your verification progress may be lost.'
+    return e.returnValue
+  }
+}
+
+const livelinessStore = useLivelinessStore()
+const { uploadLiveliness } = livelinessStore
+
+const successButton = async () => {
+  try {
+    isLoading.value = true
+    errorMessage.value = null
+
+    window.removeEventListener('beforeunload', handleBeforeUnload)
+    closeFaceDetection()
+
+    if (!capturedImages.value?.length) {
+      throw new Error('No images were captured. Please complete the verification steps.')
+    }
+
+    const formData = new FormData()
+
+    const image = capturedImages.value[0] // only the first one
+
+    if (image) {
+      if (image instanceof Blob || image instanceof File) {
+        formData.append('images[]', image)
+      } else if (typeof image === 'string' && image.startsWith('data:image')) {
+        const blob = await fetch(image).then(res => res.blob())
+        formData.append('images[]', blob)
+      } else {
+        const blob = new Blob([image])
+        formData.append('images[]', blob)
+      }
+    }
+
+    const response = await uploadLiveliness(formData)
+
+    if (!response.success) {
+      throw new Error(response.message || 'Verification failed. Please try again.')
+    }
+
+    cookies.remove('access_token')
+    cookies.remove('user')
+    cookies.remove('tokenType')
+    // Success handling
+    setTimeout(() => navigateTo('/login'), 1000)
+
+  } catch (error) {
+    console.error('Liveliness verification failed:', error)
+    errorMessage.value = error.message || 'An error occurred during verification'
+  } finally {
+    isLoading.value = false
+  }
 }
 
 onMounted(() => {
@@ -24,6 +85,11 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('beforeunload', handleBeforeUnload)
   closeFaceDetection()
+  capturedImages.value.forEach(img => {
+    if (typeof img === 'string' && img.startsWith('blob:')) {
+      URL.revokeObjectURL(img);
+    }
+  });
 })
 </script>
 
@@ -64,14 +130,19 @@ onUnmounted(() => {
           <p class="current-instruction">{{ actionInstruction }}</p>
 
           <!-- Success Message -->
-          <div
-            class="success-indicator"
-            :class="{ visible: successVisible }"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            Success! Verification complete.
+          <div class="flex flex-col items-center">
+            <div
+              class="success-indicator"
+              :class="{ visible: successVisible }"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              Success! Verification complete.
+            </div>
+            <el-button v-if="successVisible" type="primary" @click="successButton">
+              Success
+            </el-button>
           </div>
         </div>
 
@@ -90,7 +161,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* Main Container - exactly 100vh */
 .face-detection-container {
   display: flex;
   flex-direction: column;
@@ -100,7 +170,6 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
-/* Flex row container for camera and panel */
 .flex.flex-row {
   display: flex;
   height: 100%;
@@ -110,7 +179,6 @@ onUnmounted(() => {
   box-sizing: border-box;
 }
 
-/* Camera Wrapper - maintains aspect ratio */
 .camera-wrapper {
   position: relative;
   width: 60%;
@@ -133,7 +201,6 @@ onUnmounted(() => {
   background: #000;
 }
 
-/* Canvas - perfectly overlays video */
 .detection-canvas {
   position: absolute;
   top: 0;
@@ -143,7 +210,6 @@ onUnmounted(() => {
   pointer-events: none;
 }
 
-/* Verification Panel - takes remaining space with scroll if needed */
 .verification-panel {
   flex: 1;
   background: white;
@@ -169,7 +235,6 @@ onUnmounted(() => {
   line-height: 1.5;
 }
 
-/* Progress Bar */
 .verification-progress {
   margin: 1rem 0;
 }

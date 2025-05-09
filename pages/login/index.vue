@@ -8,19 +8,28 @@ definePageMeta({
   middleware: ['redirect-if-authenticated']
 })
 
+useSeoMeta({
+  title: 'JorngKa | Login',
+  description: 'Get approved for fast, secure loans up to $1000 with competitive rates. Apply online in minutes with JorngKa.'
+})
+
+
 const authStore = useAuthStore()
 const { login } = authStore
 
 const email = ref('')
 const password = ref('')
 
+const googleLoginUrl = () => {
+  window.location.href = `https://api.jorngka.online/api/auth/google`
+}
+
 const handleLogin = async () => {
   try {
     await login({ email: email.value, password: password.value })
-    navigateTo('/borrower/dashboard')
+    navigateTo('/dashboard')
   } catch (error) {
     console.error('Login failed:', error)
-    ElMessage.error(error.message || 'Login failed')
   }
 }
 </script>
@@ -46,13 +55,23 @@ const handleLogin = async () => {
           <el-button type="primary" class="w-full h-10 rounded-lg" native-type="submit">Login</el-button>
         </div>
         <div class="flex justify-between items-center mt-1">
-          <el-button type="danger" class="w-full h-10 rounded-lg">Login with Google</el-button>
+          <el-button
+            type="danger"
+            class="w-full h-10 rounded-lg"
+            @click="googleLoginUrl"
+          >Login with Google
+          </el-button>
         </div>
       </el-form>
 
-      <p class="mt-4 text-center text-gray-600">
+      <p class="mt-4 text-center text-sm text-gray-600">
         Don't have an account?
-        <a href="#" class="text-blue-500 font-semibold hover:underline">Sign up!</a>
+        <NuxtLink
+          to="/register"
+          class="text-blue-500 font-semibold hover:underline"
+        >
+          Register
+        </NuxtLink>
       </p>
     </div>
   </div>

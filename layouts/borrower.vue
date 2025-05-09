@@ -37,12 +37,12 @@ const role = user?.role
 onMounted(() => {
   // Simulate async check
   setTimeout(() => {
-    // if (role !== 2) {
-    //   console.log('Unauthorized access: Borrower role required')
-    //   navigateTo('/unauthorized')
-    // } else {
-    //   loading.value = false
-    // }
+    if (role !== 2) {
+      console.log('Unauthorized access: Borrower role required')
+      navigateTo('/unauthorized')
+    } else {
+      loading.value = false
+    }
 
     loading.value = false
   }, 1000) // Reduced delay for better UX

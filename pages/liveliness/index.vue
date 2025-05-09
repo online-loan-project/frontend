@@ -1,7 +1,7 @@
 <script setup>
 definePageMeta({
   layout: 'default',
-  // middleware: ['authenticated'],
+  middleware: ['authenticated'],
   // requiresBorrower: true,
   // requiresAdmin: true
 })
