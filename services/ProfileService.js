@@ -18,7 +18,7 @@ class ProfileService extends BaseService {
   }
 
   async updateProfile (req) {
-    return await this._post(`${this._prefix}`, req)
+    return await this._post(`${this._prefix}/update`, req)
   }
 }
 

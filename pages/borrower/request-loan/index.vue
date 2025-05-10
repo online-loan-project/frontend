@@ -67,6 +67,21 @@ const statusBadgeClass = (status) => {
   }
 };
 
+const formatStatus = (status) => {
+  switch (status) {
+    case 'approved':
+      return 'Approved';
+    case 'eligible':
+      return 'Eligible';
+    case 'rejected':
+      return 'Rejected';
+    case 'not_eligible':
+      return 'Not Eligible';
+    default:
+      return status;
+  }
+};
+
 const navigateToCreate = () => {
   navigateTo('/borrower/request-loan/create');
 };
@@ -165,7 +180,7 @@ onMounted(() => {
         <el-table-column label="Status">
           <template #default="{ row }">
             <el-tag :class="statusBadgeClass(row.status)" size="small" effect="light">
-              {{ row.status.charAt(0).toUpperCase() + row.status.slice(1) }}
+              {{ formatStatus(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
@@ -226,7 +241,7 @@ onMounted(() => {
         <div>
           <h3 class="text-sm font-medium text-gray-500">Status</h3>
           <el-tag :class="statusBadgeClass(selectedLoan.status)" size="medium" effect="light" class="mt-1">
-            {{ selectedLoan.status.charAt(0).toUpperCase() + selectedLoan.status.slice(1) }}
+            {{ formatStatus(selectedLoan.status) }}
           </el-tag>
         </div>
 

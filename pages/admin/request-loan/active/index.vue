@@ -38,6 +38,7 @@ const statusOptions = [
   { value: '', label: 'All Status' },
   { value: 'pending', label: 'Pending' },
   { value: 'eligible', label: 'Eligible' },
+  { value: 'not_eligible', label: 'Not Eligible' },
 ]
 
 // Pagination controls
@@ -157,8 +158,26 @@ const statusBadgeClass = (status) => {
       return 'warning';
     case 'rejected':
       return 'danger';
+    case 'not_eligible':
+      return 'danger';
     default:
       return 'info';
+  }
+};
+
+//format status
+const formatStatus = (status) => {
+  switch (status) {
+    case 'approved':
+      return 'Approved';
+    case 'eligible':
+      return 'Eligible';
+    case 'rejected':
+      return 'Rejected';
+    case 'not_eligible':
+      return 'Not Eligible';
+    default:
+      return status;
   }
 };
 
@@ -300,7 +319,7 @@ onMounted(() => {
         <el-table-column prop="status" label="Status">
           <template #default="{ row }">
             <el-tag :type="statusBadgeClass(row.status)" size="small">
-              {{ row.status }}
+              {{ formatStatus(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
@@ -335,7 +354,7 @@ onMounted(() => {
     </el-card>
 
     <!-- Loan Details Dialog -->
-    <el-dialog v-model="showDetailsDialog" :title="`Loan Request Details`" width="800px">
+    <el-dialog v-model="showDetailsDialog" align-center :title="`Loan Request Details`" width="800px">
       <div v-if="selectedLoan" class="space-y-4">
         <!-- Basic Information Section -->
         <el-card shadow="never" class="mb-4">
@@ -354,7 +373,7 @@ onMounted(() => {
             <div>
               <h3 class="text-sm font-medium text-gray-500">Status</h3>
               <el-tag :type="statusBadgeClass(selectedLoan.status)" class="mt-1">
-                {{ selectedLoan.status }}
+                {{ formatStatus(selectedLoan.status) }}
               </el-tag>
             </div>
             <div>
@@ -456,7 +475,7 @@ onMounted(() => {
         </div>
 
         <!-- Rejection Reason (if rejected) -->
-        <el-card shadow="never" class="mt-4" v-if="selectedLoan.status === 'rejected' && selectedLoan.rejection_reason">
+        <el-card shadow="never" class="mt-4" v-if="selectedLoan.rejection_reason">
           <template #header>
             <div class="font-medium">Rejection Details</div>
           </template>
@@ -469,7 +488,7 @@ onMounted(() => {
 
       <template #footer>
         <div class="flex justify-between">
-          <div v-if="selectedLoan?.status === 'eligible'" class="flex gap-2">
+          <div v-if="selectedLoan?.status === 'eligible' || selectedLoan?.status === 'not_eligible'" class="flex gap-2">
             <el-button type="success" @click="openApproveConfirm" :loading="loading">
               <el-icon class="mr-1"><Check /></el-icon>
               Approve
