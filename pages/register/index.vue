@@ -152,6 +152,7 @@ const handleRegister = async () => {
           :rules="rules"
           label-position="top"
           class="space-y-4"
+          :require-asterisk-position="'right'"
         >
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <el-form-item
