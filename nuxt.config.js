@@ -49,7 +49,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: "JorngKa"
+      title: "Auth with Device",
     }
   },
 
